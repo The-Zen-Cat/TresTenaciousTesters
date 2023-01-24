@@ -178,6 +178,7 @@ function median(values) {
 
 	return (values[half - 1] + values[half]) / 2.0;
 }
+
 app.delete("/deleteZipFolder", async (req, res) =>
 {
 	if (req.session.username)
@@ -210,6 +211,7 @@ app.delete("/deleteAll", async (req, res) =>
 		res.status(403).json(false);
 	}
 });
+
 //This function is performed when someone uploads a zipfolder to our backend
 app.post("/upload", async (req, res) => {
 	if (!req.session.username) {
