@@ -45,9 +45,14 @@ exports.addGoogleUser = async (id, name) => {
  seem to be relevant if you're changing the record/document, which I don't think should happen in this case.
  
  As far as I can tell, they are using .populate to do cross database population, which you would need to do if the
- Files and the Errors were stored in different databases, so I assume they are. The File schema has an Errors 
- object or array tracking all the errors for that file, and I think this call to populate fills in the object will 
- all the errors found in it based on the Error model. 
+ Files and the Errors were stored in different databases. The File schema has an Errors 
+ propery tracking all the errors for that file, and I think this call to populate fills in the object with 
+ all the errors found in it based on the Error model. At some point, the code in main.py under Bandit must run. This
+ code looks like it's making command line calls to Bandit and passing in lists of files. The output is then picked
+ up somewhere and put into a separate database and associated with the file name. If that's all working as I think
+ it might be, this getFile command uses cross database population to grab the info.
+ 
+ See File.js for where Errors is defined as a doc property.
  */
 
 exports.getFile = async (id) => {

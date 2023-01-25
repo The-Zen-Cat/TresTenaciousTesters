@@ -6,6 +6,10 @@ const mongoose = require("mongoose");
  this file exports a model called "File", which is used in DAO.js line 42. More broadly, the model is an
  interface the database can use to create, delete, update, and query documents. The same thing is being done in
  all the files in the models folder, except ErrorTypes.js and PYErrorTypes.js
+
+ Note that Errors below is a document property that holds multiple objects of type ObjectID (like a primary key).
+ The ref options tells Mongoose which model to use during population, but I don't see yet where Error is defined.
+ PYError is defined under models.
  */
 
 const Schema = new mongoose.Schema({
@@ -18,7 +22,7 @@ const Schema = new mongoose.Schema({
 	Source: String,
 	SeverityScore: Number,
 	ParentZipFileId: mongoose.Schema.Types.ObjectId,
-	Errors: [
+	Errors: [ 
 		{
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Error",
