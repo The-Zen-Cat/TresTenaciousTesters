@@ -38,6 +38,18 @@ exports.addGoogleUser = async (id, name) => {
 	return await User.create({ Username: name, googleId: id, Admin: false });
 };
 
+
+/*
+ The .lean option tells Mongoose to skip instantiating a full document in response to the find call, and instead
+ return a smaller "plain old JS object" (POJO) to speed things up. There are downsides to this, but most of them
+ seem to be relevant if you're changing the record/document, which I don't think should happen in this case.
+ 
+ As far as I can tell, they are using .populate to do cross database population, which you would need to do if the
+ Files and the Errors were stored in different databases, so I assume they are. The File schema has an Errors 
+ object or array tracking all the errors for that file, and I think this call to populate fills in the object will 
+ all the errors found in it based on the Error model. 
+ */
+
 exports.getFile = async (id) => {
 	return File.find()
 		.lean()
