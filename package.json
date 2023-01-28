@@ -31,7 +31,12 @@
     "package.json": "^2.0.1",
     "python-shell": "^3.0.1"
   },
-
+  "nodemonConfig": {
+    "ignore": [
+      "./extracted",
+      "./testFiles"
+    ]
+  },
   "engines": {
     "node": "18.9.0", 
     "npm" : "8.19.2"
