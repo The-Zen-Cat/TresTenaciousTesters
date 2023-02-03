@@ -1,7 +1,7 @@
 {
-"buildpacks": [
-    {
-      "url": "https://github.com/stomita/heroku-buildpack-nodejs"
-    }
-]
-}
+    "buildpacks": [
+      {
+        "url": "https://github.com/stomita/heroku-buildpack-nodejs"
+      }
+    ]
+  }
