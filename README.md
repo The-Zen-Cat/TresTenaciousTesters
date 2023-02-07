@@ -1,27 +1,45 @@
-# codeChomper
+# codeChomperTres
 
-## Senior Project Fall 2022 University of Florida
-Ryan Dembo
+## Senior Project Spring 2023 University of Florida
+Hope Pegah
 
-Kai Priester
+Zachary Schirm
 
-Claudia Rubio
-
-Daniel Fernandes
+Kathleen Tiley
 
 ## Abstract
-Whether we realize it or not, software impacts our daily lives in almost every aspect. Therefore when software fails to operate as expected, we can greatly suffer the effects. Many software failures root from insecure coding practices. Newly graduated software engineers are often found making these types of mistakes while coding. University professors are looking to introduce secure coding practices earlier in the undergraduate curriculum. It is important that professors can identify which insecure coding practices are most commonly seen in their student’s code so that professors can quickly and dynamically address these issues throughout the school year. Static code analysis tools are designed to detect these types of vulnerabilities. codeChomper is a web platform that will allow professors to efficiently run student’s code through static code analysis tools and effectively draw conclusions on what insecure coding practices are most common among their students. codeChomper will be tailored to computer science professors with a large number of students. Unlike running standalone static code analysis tools, codeChomper will streamline the process to work with multiple different scripting languages and automatically perform data analytics afterwards.
+In recent years, web applications have replaced offline resources and static web pages as society
+increasingly relies on online platforms for services such as education, e-commerce, and banking.
+Unfortunately, these applications are complex and have many security vulnerabilities that
+malicious actors can exploit to obtain credential information and breach an organization’s
+network security. Depending on the industry, such attacks can have devastating effects when
+successful, even endangering lives. Research into university curriculums and the continued
+prevalence of high-severity vulnerabilities in most web applications suggest that newly
+graduated software engineers do not have the secure programming skills the industry requires.
+The codeChomper project supports university professors’ efforts to integrate software security
+principles into their curricula by providing a quick and efficient web platform for teachers to
+analyze student code for security vulnerabilities. Unlike existing static analysis tools,
+codeChomper allows users to upload large sets of code files as .zip files, automatically detects
+the languages used, and provides statistics and analysis tailored to computer science professors.
+With this tool, professors can quickly identify and address common problems immediately in
+their courses, thereby increasing students’ exposure to secure programming principles and
+techniques.
 
 ## Technical Documentation 
 ### For Local Development
+Prequel: Ensure you have python installed on your local dev machine.  Install bandit by navigating to: `~/codeChomper/bandit/   Then run: pip install bandit
 1. `~$ git clone [repository URL] && git switch [name]-dev`
 2. Supply values to `codeChomper/.env.template` and save as `codeChomper/.env`
-3. `~/codeChomper$ npm install`
-4. `~/codeChomper/client$ npm install && npm run build` (production, static) or `~/codeChomper/client$ npm install && npm start` (development, dynamic)
-5. `~/codeChomper$ node index.js` (in separate terminal if latter method of (4) was used)
-6. On success, console will output `Example app listening at http://localhost:8080
-Database connection open`
+3. `~/codeChomper$ npm install` (first time running only - ensure dependencies present)
+4. `~/codeChomper$ npm start
+5. On successful server start, console will output `Example app listening at http://localhost:8080
+6. `~/codeChomper/client$ npm install (first time setup only - ensure dependencies present)
+7. `~/codeChomper/client$ npm run build` (production, static) or `~/codeChomper/client$ npm start dev` (development, dynamic)
+8. On successful client start, react app will open in web browser automatically. 
 
+
+
+-----WE CAN PROBABLY DELETE THIS SECTION (WILL KEEP FOR NOW TO ENSURE IT ISN'T NEEDED LATER)
 ### Updating/Recompiling Bandit
 1. Download and install [Python](https://www.python.org/downloads/)
 2. Using pip, download and install PyInstaller and Bandit (`pip install pyinstaller` and `pip install bandit`)
