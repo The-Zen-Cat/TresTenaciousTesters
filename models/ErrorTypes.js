@@ -260,7 +260,7 @@ exports.convertRuleIDToErrorType = (ErrorID) => {
 		return -1;
 	}
 	for (const [key, value] of Object.entries(exports.ErrorList)) {
-		if ("" + value["Name"] == ErrorID.replace("-", " ")) {
+		if ("" + value["Name"] == ErrorID.replaceAll("-", " ")) {
 			return key;
 		}
 	}
