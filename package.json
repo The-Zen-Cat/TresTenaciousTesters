@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/eslint-plugin-sdl": "^0.1.8",
+    "@microsoft/eslint-plugin-sdl": "^0.1.9",
     "adm-zip": "^0.5.9",
     "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
@@ -38,7 +38,7 @@
     ]
   },
   "engines": {
-    "node": "18.9.0", 
-    "npm" : "8.19.2"
+    "node": "18.9.0",
+    "npm": "8.19.2"
   }
 }

@@ -73,6 +73,7 @@ database.connect();
 })();
 
 //takes the string of the filepath from canvas and extracts the students name from it
+//filepath must be in Canvas output format with student name in file title - See Submissions(5) folder
 function getStudentIDFromRelPath(target, map) {
   var cut = target.indexOf("_");
   var cut2 = target.indexOf(path.sep);
@@ -449,8 +450,16 @@ app.post("/upload", async (req, res) => {
       //clear out the dir
       fsExtra.emptyDirSync("./extracted");
       res.json({});
+
+    // ##### RUNS ESLINT IF THERE ARE NO PYTHON FILES IN FOLDER ##### //  
+    // if clause running Bandit starts on line 266
     } else {
-      // Setup ESLINT and run them on all the files in this folder.
+      /**
+       * Setup ESLINT and run on all the files in this folder. Uses eslint Node.js API function lintFiles to
+       * do linting and return all relevant info in results object. Will check for rules identified in the config
+       * file .eslintrc.js and in ErrorTypes.js. See .eslintrc.js file for additional comment.
+       */
+      
       const eslint = new ESLint();
       const results = await eslint.lintFiles(["./extracted/**/*.js"]);
 
@@ -484,17 +493,16 @@ app.post("/upload", async (req, res) => {
       //Go tThrough ESlint detected errors
       await Promise.all(
         results.map(async (result) => {
-          console.log("absolute path:");
-          console.log(result.filePath);
           const relativePath = getRelativePath(result.filePath, false);
-          console.log("relative path:");
-          console.log(relativePath);
+
           const severityScores = [];
 
           //add Errors to database
           const errors = await Promise.all(
             result.messages.map((message) => {
+
               const currentErrorType = convertErrorIDToType(message.ruleId);
+
               severityScores.push(ErrorTypes[currentErrorType]["Severity"]);
               return DAO.addError(
                 currentErrorType,
@@ -514,7 +522,9 @@ app.post("/upload", async (req, res) => {
           //TODO TEST THIS FUNCTION
           //gets the severity score of current file
           const fileSeverity = getSeverityScore(severityScores, -1);
-          console.log(relativePath);
+          console.log("file Severity is: ");
+          console.log(fileSeverity);
+
           //Stores file on the database
           const fileRecord = await DAO.addFile(
             relativePath,
@@ -530,7 +540,7 @@ app.post("/upload", async (req, res) => {
             false
           );
 
-          //Gets the current student DB id
+          //Gets the current student DB id - RELATIVEPATH MUST BE IN CANVAS FORMAT
           const currentStudentID = getStudentIDFromRelPath(
             relativePath,
             studentIDsByName

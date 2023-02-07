@@ -1,3 +1,18 @@
+/**
+ * Config file for eslint
+ * Defines global environment variables, the eslint plugins being used, and the specific rules eslint
+ * is testing for
+ * Rule Severity: 0 (no error), 1 (warn), or 2 (error)
+ * 
+ * ESLint will catch any errors looked for by eslint:recommend and the sdl plugin, whether or not the specific
+ * rule is listed in the rules section, to my knowledge. It catches no-new-func and treats it correctly. However,
+ * the rule must have an entry in ErrorTypes.js - If it doesn't, or if the ruleID eslint returns doesn't match
+ * the name in the ErrorTypes.js entry, the error will be processed as ErrorTypes[-1] (no error). Note the ruleID
+ * to Error Type name conversion function replaces all '-' with ' '.
+ * 
+
+ */
+
 module.exports = {
 	env: {
 		browser: true,
@@ -10,6 +25,7 @@ module.exports = {
 	},
 	rules: {
 		"no-eval": 2,
+		"no-implied-eval": 2,
 		"no-unused-vars":0,
 		"constructor-super":0,
 		"for-direction":0,
