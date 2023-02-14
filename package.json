@@ -14,13 +14,15 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@microsoft/eslint-plugin-sdl": "^0.1.8",
+    "@microsoft/eslint-plugin-sdl": "^0.2.0",
     "adm-zip": "^0.5.9",
     "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "eslint": "^8.6.0",
+    "eslint-plugin-security": "^1.7.1",
+    "eslint-plugin-xss": "^0.1.12",
     "express": "^4.17.2",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.3",
@@ -38,7 +40,10 @@
     ]
   },
   "engines": {
-    "node": "18.9.0", 
-    "npm" : "8.19.2"
+    "node": "18.9.0",
+    "npm": "8.19.2"
+  },
+  "devDependencies": {
+    "eslint-plugin-no-secrets": "^0.8.9"
   }
 }

@@ -1,15 +1,57 @@
+/**
+ * Config file for eslint
+ * Defines global environment variables, the eslint plugins being used, and the specific rules eslint
+ * is testing for
+ * Rule Severity: 0 (no error), 1 (warn), or 2 (error)
+ * 
+ * ESLint will catch any errors looked for by eslint:recommend whether or not the specific
+ * rule is listed in the rules section. If the sdl plugin is including the package.json dependencies and is
+ * installed, eslint will check for all rules provided by the plugin at the default severity levels. If the sdl
+ * plugin is not installed as a dependency (as is currently the case), eslint will only check for rules specified
+ * in the rules section at the given severity level. However, the rule must have an entry in ErrorTypes.js - If it 
+ * doesn't, or if the ruleID eslint returns doesn't match
+ * the name in the ErrorTypes.js entry, the error will be processed as ErrorTypes[-1] (no error). Note the ruleID
+ * to Error Type name conversion function replaces all '-' with ' '.
+ * 
+ * TODO:
+ * 
+ * - Add all sdl rules to be sure they'll run
+ * - Test all security plugin rules - test files available on github
+
+ */
+
 module.exports = {
 	env: {
 		browser: true,
 		es2021: true,
 	},
-	extends: "eslint:recommended",
+	extends: [
+		"eslint:recommended",
+	],
 	parserOptions: {
 		ecmaVersion: 12,
 		sourceType: "module",
 	},
 	rules: {
 		"no-eval": 2,
+		"no-implied-eval": 2,
+		"@microsoft/sdl/no-inner-html": 2,
+		"no-secrets/no-secrets": [2, {"tolerance":4.1}], // tolerance: max randomness allowed, 4 is default
+		"xss/no-mixed-html": 2,
+		"xss/no-location-href-assign": 2,
+		"security/detect-bidi-characters": 2,
+		"security/detect-buffer-noassert": 2,
+		"security/detect-child-process": 2,
+		"security/detect-disable-mustache-escape": 2,
+		"security/detect-new-buffer": 2,
+		"security/detect-no-csrf-before-method-override": 2,
+		//"security/detect-non-literal-fs-filename": 2, not included - generates error in Index.js
+		"security/detect-non-literal-regexp": 2,
+		"security/detect-non-literal-require": 2,
+		//"security/detect-object-injection": 2, not included - generates error in ErrorTypes files
+		"security/detect-possible-timing-attacks": 2,
+		"security/detect-pseudoRandomBytes": 2,
+		"security/detect-unsafe-regex": 2,
 		"no-unused-vars":0,
 		"constructor-super":0,
 		"for-direction":0,
@@ -67,5 +109,5 @@ module.exports = {
 		"use-isnan":0,
 		"valid-typeof":0,
 	},
-	plugins: ["@microsoft/eslint-plugin-sdl"],
+	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss", "security"]
 };

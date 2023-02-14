@@ -99,7 +99,9 @@ exports.ErrorList[9] = {
 	Language: "JavaScript",
 	Name: "@microsoft/sdl/no angularjs sanitization whitelist",
 	Description:
+	// eslint-disable-next-line no-secrets/no-secrets
 		"Call to $compileProvider.aHrefSanitizationWhitelist or $compileProvider.imgSrcSanitizationWhitelist was detected, which could configure whitelists in AngularJS sanitizer",
+		// eslint-disable-next-line no-secrets/no-secrets
 	//OG Description: @microsoft/sdl/no-angularjs-sanitization-whitelist, Calls to $compileProvider.aHrefSanitizationWhitelist or $compileProvider.imgSrcSanitizationWhitelist configure whitelists in AngularJS sanitizer and need to be reviewed.
 	Severity: 6, //?
 	CWE: "https://cwe.mitre.org/data/definitions/80.html",
@@ -229,7 +231,9 @@ exports.ErrorList[22] = {
 	Language: "JavaScript",
 	Name: "react/no danger",
 	Description:
+	// eslint-disable-next-line no-secrets/no-secrets
 		"Usage of dangerouslySetInnerHTML property in React was detected, which allows passing unsanitized HTML in DOM.",
+		// eslint-disable-next-line no-secrets/no-secrets
 	//OG Description: react/no-danger, Bans usage of dangerouslySetInnerHTML property in React as it allows passing unsanitized HTML in DOM.
 	Severity: 7, //?
 	CWE: "https://cwe.mitre.org/data/definitions/20.html",
@@ -245,6 +249,139 @@ exports.ErrorList[23] = {
 	CWE: "https://cwe.mitre.org/data/definitions/95.html",
 	MoreInfo: "https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/no-implied-eval.md"
 };
+// all severities below here are med (5) without assessment
+exports.ErrorList[24] = {
+	Language: "JavaScript",
+	Name: "no secrets/no secrets",
+	Description: "An eslint rule that searches for potential secrets/keys in code and JSON files",
+	Severity: 5, 
+	CWE: "https://attack.mitre.org/techniques/T1552/004/",
+	MoreInfo: "https://github.com/nickdeis/eslint-plugin-no-secrets"
+};
+exports.ErrorList[25] = {
+	Language: "JavaScript",
+	Name: "xss/no mixed html",
+	Description: "Checks for missing encoding when concatenating HTML strings",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://github.com/Rantanen/eslint-plugin-xss/blob/master/docs/rules/no-mixed-html.md"
+};
+exports.ErrorList[26] = {
+	Language: "JavaScript",
+	Name: "xss/no location href assign",
+	Description: "This rule ensures that you are calling escape logic before assigning to location.href property",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://github.com/Rantanen/eslint-plugin-xss/blob/master/docs/rules/no-location-href-assign.md"
+};
+exports.ErrorList[27] = {
+	Language: "JavaScript",
+	Name: "security/detect bidi characters",
+	Description: "Detects trojan source attacks that employ unicode bidi attacks to inject malicious code",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/507.html",
+	// eslint-disable-next-line no-secrets/no-secrets
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/0c9c1defce36d4baa904012b80a57be4cebfd13b/docs/rules/detect-bidi-characters.md"
+};
+exports.ErrorList[28] = {
+	Language: "JavaScript",
+	Name: "security/detect buffer noassert",
+	Description: "Detects calls to buffer with noAssert flag set",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/726.html",
+	// eslint-disable-next-line no-secrets/no-secrets
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/0c9c1defce36d4baa904012b80a57be4cebfd13b/docs/rules/detect-buffer-noassert.md"
+};
+exports.ErrorList[29] = {
+	Language: "JavaScript",
+	Name: "security/detect child process",
+	Description: "Detects instances of child_process & non-literal exec() calls",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/78.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[30] = {
+	Language: "JavaScript",
+	Name: "security/detect disable mustache escape",
+	Description: "Detects object.escapeMarkup = false, which can be used with some template engines to disable escaping of HTML entities",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://owasp.org/www-community/attacks/xss/"
+};
+exports.ErrorList[31] = {
+	Language: "JavaScript",
+	Name: "security/detect new buffer",
+	Description: "Detects instances of new Buffer(argument) where argument is any non-literal value",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/726.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[32] = {
+	Language: "JavaScript",
+	Name: "security/detect no csrf before method override",
+	Description: "Detects Express csrf middleware setup before method-override middleware",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/352.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/bypass-connect-csrf-protection-by-abusing.md"
+};
+exports.ErrorList[33] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal fs filename",
+	Description: "Detects variable in filename argument of fs calls, which might allow an attacker to access anything on your system",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/35.html",
+	MoreInfo: "https://owasp.org/www-community/attacks/Path_Traversal"
+};
+exports.ErrorList[34] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal regexp",
+	Description: "Detects RegExp(variable), which might allow an attacker to DOS your server with a long-running regular expression",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1333.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/regular-expression-dos-and-node.md"
+};
+exports.ErrorList[35] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal require",
+	Description: "Detects require(variable), which might allow an attacker to load and run arbitrary code, or access arbitrary files on disk",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/23.html",
+	MoreInfo: "https://www.bennadel.com/blog/2169-where-does-node-js-and-require-look-for-modules.htm"
+};
+exports.ErrorList[36] = {
+	Language: "JavaScript",
+	Name: "security/detect object injection",
+	Description: "Detects variable[key] as a left- or right-hand assignment operand",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/20.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/the-dangers-of-square-bracket-notation.md"
+};
+exports.ErrorList[37] = {
+	Language: "JavaScript",
+	Name: "security/detect possible timing attacks",
+	Description: "Detects insecure comparisons (==, !=, !== and ===), which check input sequentially",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1254.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[38] = {
+	Language: "JavaScript",
+	Name: "security/detect pseudoRandomBytes",
+	Description: "Detects if pseudoRandomBytes() is in use, which might not give you the randomness you need and expect",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/338.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[39] = {
+	Language: "JavaScript",
+	Name: "security/detect unsafe regex",
+	Description: "Detects potentially unsafe regular expressions, which may take a very long time to run, blocking the event loop",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1333.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/regular-expression-dos-and-node.md"
+};
+
+
 //TO-DO: add all python errors
 // exports.ErrorList[101] = {
 // 	Language: "Python",
@@ -260,7 +397,7 @@ exports.convertRuleIDToErrorType = (ErrorID) => {
 		return -1;
 	}
 	for (const [key, value] of Object.entries(exports.ErrorList)) {
-		if ("" + value["Name"] == ErrorID.replace("-", " ")) {
+		if ("" + value["Name"] == ErrorID.replaceAll("-", " ")) {
 			return key;
 		}
 	}
