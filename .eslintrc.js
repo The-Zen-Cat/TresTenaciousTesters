@@ -16,6 +16,7 @@
  * TODO:
  * 
  * - Add all sdl rules to be sure they'll run
+ * - Test all security plugin rules - test files available on github
 
  */
 
@@ -25,7 +26,7 @@ module.exports = {
 		es2021: true,
 	},
 	extends: [
-		"eslint:recommended"
+		"eslint:recommended",
 	],
 	parserOptions: {
 		ecmaVersion: 12,
@@ -38,6 +39,19 @@ module.exports = {
 		"no-secrets/no-secrets": [2, {"tolerance":4.1}], // tolerance: max randomness allowed, 4 is default
 		"xss/no-mixed-html": 2,
 		"xss/no-location-href-assign": 2,
+		"security/detect-bidi-characters": 2,
+		"security/detect-buffer-noassert": 2,
+		"security/detect-child-process": 2,
+		"security/detect-disable-mustache-escape": 2,
+		"security/detect-new-buffer": 2,
+		"security/detect-no-csrf-before-method-override": 2,
+		//"security/detect-non-literal-fs-filename": 2, not included - generates error in Index.js
+		"security/detect-non-literal-regexp": 2,
+		"security/detect-non-literal-require": 2,
+		//"security/detect-object-injection": 2, not included - generates error in ErrorTypes files
+		"security/detect-possible-timing-attacks": 2,
+		"security/detect-pseudoRandomBytes": 2,
+		"security/detect-unsafe-regex": 2,
 		"no-unused-vars":0,
 		"constructor-super":0,
 		"for-direction":0,
@@ -95,5 +109,5 @@ module.exports = {
 		"use-isnan":0,
 		"valid-typeof":0,
 	},
-	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss"]
+	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss", "security"]
 };

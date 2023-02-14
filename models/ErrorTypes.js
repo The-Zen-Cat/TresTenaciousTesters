@@ -274,6 +274,112 @@ exports.ErrorList[26] = {
 	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
 	MoreInfo: "https://github.com/Rantanen/eslint-plugin-xss/blob/master/docs/rules/no-location-href-assign.md"
 };
+exports.ErrorList[27] = {
+	Language: "JavaScript",
+	Name: "security/detect bidi characters",
+	Description: "Detects trojan source attacks that employ unicode bidi attacks to inject malicious code",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/507.html",
+	// eslint-disable-next-line no-secrets/no-secrets
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/0c9c1defce36d4baa904012b80a57be4cebfd13b/docs/rules/detect-bidi-characters.md"
+};
+exports.ErrorList[28] = {
+	Language: "JavaScript",
+	Name: "security/detect buffer noassert",
+	Description: "Detects calls to buffer with noAssert flag set",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/726.html",
+	// eslint-disable-next-line no-secrets/no-secrets
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/0c9c1defce36d4baa904012b80a57be4cebfd13b/docs/rules/detect-buffer-noassert.md"
+};
+exports.ErrorList[29] = {
+	Language: "JavaScript",
+	Name: "security/detect child process",
+	Description: "Detects instances of child_process & non-literal exec() calls",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/78.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[30] = {
+	Language: "JavaScript",
+	Name: "security/detect disable mustache escape",
+	Description: "Detects object.escapeMarkup = false, which can be used with some template engines to disable escaping of HTML entities",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://owasp.org/www-community/attacks/xss/"
+};
+exports.ErrorList[31] = {
+	Language: "JavaScript",
+	Name: "security/detect new buffer",
+	Description: "Detects instances of new Buffer(argument) where argument is any non-literal value",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/726.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[32] = {
+	Language: "JavaScript",
+	Name: "security/detect no csrf before method override",
+	Description: "Detects Express csrf middleware setup before method-override middleware",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/352.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/bypass-connect-csrf-protection-by-abusing.md"
+};
+exports.ErrorList[33] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal fs filename",
+	Description: "Detects variable in filename argument of fs calls, which might allow an attacker to access anything on your system",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/35.html",
+	MoreInfo: "https://owasp.org/www-community/attacks/Path_Traversal"
+};
+exports.ErrorList[34] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal regexp",
+	Description: "Detects RegExp(variable), which might allow an attacker to DOS your server with a long-running regular expression",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1333.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/regular-expression-dos-and-node.md"
+};
+exports.ErrorList[35] = {
+	Language: "JavaScript",
+	Name: "security/detect non literal require",
+	Description: "Detects require(variable), which might allow an attacker to load and run arbitrary code, or access arbitrary files on disk",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/23.html",
+	MoreInfo: "https://www.bennadel.com/blog/2169-where-does-node-js-and-require-look-for-modules.htm"
+};
+exports.ErrorList[36] = {
+	Language: "JavaScript",
+	Name: "security/detect object injection",
+	Description: "Detects variable[key] as a left- or right-hand assignment operand",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/20.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/the-dangers-of-square-bracket-notation.md"
+};
+exports.ErrorList[37] = {
+	Language: "JavaScript",
+	Name: "security/detect possible timing attacks",
+	Description: "Detects insecure comparisons (==, !=, !== and ===), which check input sequentially",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1254.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[38] = {
+	Language: "JavaScript",
+	Name: "security/detect pseudoRandomBytes",
+	Description: "Detects if pseudoRandomBytes() is in use, which might not give you the randomness you need and expect",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/338.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security"
+};
+exports.ErrorList[39] = {
+	Language: "JavaScript",
+	Name: "security/detect unsafe regex",
+	Description: "Detects potentially unsafe regular expressions, which may take a very long time to run, blocking the event loop",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1333.html",
+	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/regular-expression-dos-and-node.md"
+};
 
 
 //TO-DO: add all python errors
