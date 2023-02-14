@@ -21,6 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
     "eslint": "^8.6.0",
+    "eslint-plugin-xss": "^0.1.12",
     "express": "^4.17.2",
     "express-fileupload": "^1.2.1",
     "express-session": "^1.17.3",

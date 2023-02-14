@@ -14,8 +14,7 @@
  * to Error Type name conversion function replaces all '-' with ' '.
  * 
  * TODO:
- * - Test if 4.1 tolerance is too high to pick up real secrets - This is lowest level that allows links in
- * ErrorTypes.js
+ * 
  * - Add all sdl rules to be sure they'll run
 
  */
@@ -37,6 +36,8 @@ module.exports = {
 		"no-implied-eval": 2,
 		"@microsoft/sdl/no-inner-html": 2,
 		"no-secrets/no-secrets": [2, {"tolerance":4.1}], // tolerance: max randomness allowed, 4 is default
+		"xss/no-mixed-html": 2,
+		"xss/no-location-href-assign": 2,
 		"no-unused-vars":0,
 		"constructor-super":0,
 		"for-direction":0,
@@ -94,5 +95,5 @@ module.exports = {
 		"use-isnan":0,
 		"valid-typeof":0,
 	},
-	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets"]
+	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss"]
 };

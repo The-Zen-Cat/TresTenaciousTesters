@@ -502,6 +502,8 @@ app.post("/upload", async (req, res) => {
             result.messages.map((message) => {
 
               const currentErrorType = convertErrorIDToType(message.ruleId);
+              console.log("Error Type after conversion: ")
+              console.log(currentErrorType);
 
               severityScores.push(ErrorTypes[currentErrorType]["Severity"]);
               return DAO.addError(

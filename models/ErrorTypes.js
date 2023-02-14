@@ -258,6 +258,22 @@ exports.ErrorList[24] = {
 	CWE: "https://attack.mitre.org/techniques/T1552/004/",
 	MoreInfo: "https://github.com/nickdeis/eslint-plugin-no-secrets"
 };
+exports.ErrorList[25] = {
+	Language: "JavaScript",
+	Name: "xss/no mixed html",
+	Description: "Checks for missing encoding when concatenating HTML strings",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://github.com/Rantanen/eslint-plugin-xss/blob/master/docs/rules/no-mixed-html.md"
+};
+exports.ErrorList[26] = {
+	Language: "JavaScript",
+	Name: "xss/no location href assign",
+	Description: "This rule ensures that you are calling escape logic before assigning to location.href property",
+	Severity: 5,
+	CWE: "https://cwe.mitre.org/data/definitions/1033.html",
+	MoreInfo: "https://github.com/Rantanen/eslint-plugin-xss/blob/master/docs/rules/no-location-href-assign.md"
+};
 
 
 //TO-DO: add all python errors
