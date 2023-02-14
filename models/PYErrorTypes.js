@@ -5,6 +5,7 @@ exports.PYErrorList[101] = {
 		"Use of assert detected. The enclosed code will be removed when compiling to optimised byte code.",
     Severity:  1, //low
     CWE: "https://cwe.mitre.org/data/definitions/703.html",
+    // eslint-disable-next-line no-secrets/no-secrets
     MoreInfo: "https://bugs.launchpad.net/juniperopenstack/+bug/1456193",
     Group: "Misc tests"   
 };

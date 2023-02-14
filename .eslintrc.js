@@ -13,6 +13,10 @@
  * the name in the ErrorTypes.js entry, the error will be processed as ErrorTypes[-1] (no error). Note the ruleID
  * to Error Type name conversion function replaces all '-' with ' '.
  * 
+ * TODO:
+ * - Test if 4.1 tolerance is too high to pick up real secrets - This is lowest level that allows links in
+ * ErrorTypes.js
+ * - Add all sdl rules to be sure they'll run
 
  */
 
@@ -32,6 +36,7 @@ module.exports = {
 		"no-eval": 2,
 		"no-implied-eval": 2,
 		"@microsoft/sdl/no-inner-html": 2,
+		"no-secrets/no-secrets": [2, {"tolerance":4.1}], // tolerance: max randomness allowed, 4 is default
 		"no-unused-vars":0,
 		"constructor-super":0,
 		"for-direction":0,
@@ -89,5 +94,5 @@ module.exports = {
 		"use-isnan":0,
 		"valid-typeof":0,
 	},
-	plugins: ["@microsoft/eslint-plugin-sdl"]
+	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets"]
 };

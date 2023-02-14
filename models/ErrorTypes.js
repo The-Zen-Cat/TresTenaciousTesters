@@ -99,7 +99,9 @@ exports.ErrorList[9] = {
 	Language: "JavaScript",
 	Name: "@microsoft/sdl/no angularjs sanitization whitelist",
 	Description:
+	// eslint-disable-next-line no-secrets/no-secrets
 		"Call to $compileProvider.aHrefSanitizationWhitelist or $compileProvider.imgSrcSanitizationWhitelist was detected, which could configure whitelists in AngularJS sanitizer",
+		// eslint-disable-next-line no-secrets/no-secrets
 	//OG Description: @microsoft/sdl/no-angularjs-sanitization-whitelist, Calls to $compileProvider.aHrefSanitizationWhitelist or $compileProvider.imgSrcSanitizationWhitelist configure whitelists in AngularJS sanitizer and need to be reviewed.
 	Severity: 6, //?
 	CWE: "https://cwe.mitre.org/data/definitions/80.html",
@@ -229,7 +231,9 @@ exports.ErrorList[22] = {
 	Language: "JavaScript",
 	Name: "react/no danger",
 	Description:
+	// eslint-disable-next-line no-secrets/no-secrets
 		"Usage of dangerouslySetInnerHTML property in React was detected, which allows passing unsanitized HTML in DOM.",
+		// eslint-disable-next-line no-secrets/no-secrets
 	//OG Description: react/no-danger, Bans usage of dangerouslySetInnerHTML property in React as it allows passing unsanitized HTML in DOM.
 	Severity: 7, //?
 	CWE: "https://cwe.mitre.org/data/definitions/20.html",
@@ -245,6 +249,17 @@ exports.ErrorList[23] = {
 	CWE: "https://cwe.mitre.org/data/definitions/95.html",
 	MoreInfo: "https://github.com/typescript-eslint/typescript-eslint/blob/main/packages/eslint-plugin/docs/rules/no-implied-eval.md"
 };
+// all severities below here are med (5) without assessment
+exports.ErrorList[24] = {
+	Language: "JavaScript",
+	Name: "no secrets/no secrets",
+	Description: "An eslint rule that searches for potential secrets/keys in code and JSON files",
+	Severity: 5, 
+	CWE: "https://attack.mitre.org/techniques/T1552/004/",
+	MoreInfo: "https://github.com/nickdeis/eslint-plugin-no-secrets"
+};
+
+
 //TO-DO: add all python errors
 // exports.ErrorList[101] = {
 // 	Language: "Python",
