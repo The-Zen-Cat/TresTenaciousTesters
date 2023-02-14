@@ -3,7 +3,10 @@ let devmode = false;
 let url;
 const development_url = "http://localhost";
 const development_port = 8080;
-const production_url = "https://" + HEROKU_APP_NAME + ".herokuapp.com";
+var production_url = "https://codechompertres.herokuapp.com";
+if (process.env.HEROKU_PROD_APP == false) {
+  production_url = "https://" + process.env.HEROKU_APP_NAME + ".herokuapp.com";
+}
 axios.defaults.withCredentials = true;
 
 if (devmode || process.env.NODE_ENV === "development") {
