@@ -3,7 +3,7 @@ let devmode = false;
 let url;
 const development_url = "http://localhost";
 const development_port = 8080;
-var production_url = window.location.origin;
+const production_url = window.location.origin;
 console.log("production url" + production_url);
 console.log(window.location.origin);
 axios.defaults.withCredentials = true;
