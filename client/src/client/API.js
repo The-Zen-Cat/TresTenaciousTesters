@@ -6,7 +6,13 @@ const development_port = 8080;
 var production_url = "https://codechompertres.herokuapp.com";
 if (process.env.HEROKU_PROD_APP == false) {
   production_url = "https://" + process.env.HEROKU_APP_NAME + ".herokuapp.com";
+  console.log(production_url);
+  console.log("in if loop");
 }
+console.log("after if loop");
+console.log(production_url);
+console.log(process.env.REACT_APP_HEROKU_PROD_APP);
+console.log(process.env.REACT_APP_HEROKU_APP_NAME);
 axios.defaults.withCredentials = true;
 
 if (devmode || process.env.NODE_ENV === "development") {
