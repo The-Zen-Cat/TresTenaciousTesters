@@ -9,34 +9,37 @@ const PYError = require("../models/PYError.js").Model;
 const ErrorList = require("../models/ErrorTypes.js").ErrorList;
 // const PYErrorList = require("../models/PYErrorTypes.js").PYErrorList;
 
-exports.getUser = async (username) =>
-{
-	return User.findOne({ Username: username, googleId: null, facebookId: null }).exec();
+exports.getUser = async (username) => {
+  return User.findOne({
+    Username: username,
+    googleId: null,
+    facebookId: null,
+  }).exec();
 };
 
 exports.getStudent = async (id) => {
-	return Student.find();
+  return Student.find();
 };
 
-exports.findFacebookUser = async (id) => {
-	return User.findOne({facebookId: id});
-};
+//exports.findFacebookUser = async (id) => {
+//	return User.findOne({facebookId: id});
+//};
 
-exports.findGoogleUser = async (id) => {
-	return User.findOne({googleId: id});
-};
+//exports.findGoogleUser = async (id) => {
+//	return User.findOne({googleId: id});
+//};
 
 exports.getUserById = async (id) => {
-	return User.findById(id);
+  return User.findById(id);
 };
 
-exports.addFacebookUser = async (id, name) => {
-	return await User.create({ Username: name, facebookId: id, Admin: false });
-};
+//exports.addFacebookUser = async (id, name) => {
+//	return await User.create({ Username: name, facebookId: id, Admin: false });
+//};
 
-exports.addGoogleUser = async (id, name) => {
-	return await User.create({ Username: name, googleId: id, Admin: false });
-};
+//exports.addGoogleUser = async (id, name) => {
+//	return await User.create({ Username: name, googleId: id, Admin: false });
+//};
 
 /*
  The .lean option tells Mongoose to skip instantiating a full document in response to the find call, and instead
@@ -55,247 +58,251 @@ exports.addGoogleUser = async (id, name) => {
  */
 
 exports.getFile = async (id) => {
-	return File.find()
-		.lean()
-			.populate({
-				path: "Errors", 
-				model: "Error"
-			});
+  return File.find().lean().populate({
+    path: "Errors",
+    model: "Error",
+  });
 };
 
-exports.addUser = async (Username, Hash, Admin) =>
-{
-	if (Admin)
-	{
-		return await User.create({ Username: Username, Hash: Hash, Admin: true });
-	}
-	else
-	{
-		return await User.create({ Username: Username, Hash: Hash, Admin: false });
-	}
+exports.addUser = async (Username, Hash, Admin) => {
+  if (Admin) {
+    return await User.create({ Username: Username, Hash: Hash, Admin: true });
+  } else {
+    return await User.create({ Username: Username, Hash: Hash, Admin: false });
+  }
 };
-exports.addStudent = async (Name, ZipFolderID) => {
-	return await Student.create({ Name, ZipFolderID, Files: [] });
+exports.addStudent = async (StudentID, ZipFolderID, SeverityScore, Files) => {
+  return await Student.create({ StudentID, ZipFolderID, SeverityScore, Files });
 };
-exports.addZipFile = async (Name, Date, Owner, FileCount) => {
-	return await ZipFile.create({ Name, Date, Owner, FileCount });
+exports.addZipFile = async (
+  Name,
+  Date,
+  Owner,
+  FileCount,
+  FileCountJava,
+  FileCountPython
+) => {
+  return await ZipFile.create({
+    Name,
+    Date,
+    Owner,
+    FileCount,
+    FileCountJava,
+    FileCountPython,
+  });
 };
 
 exports.addError = async (
-	ErrorType,
-	RuleID,
-	Severity,
-	Message,
-	Line,
-	Column,
-	NodeType,
-	MessageId,
-	EndLine,
-	EndColumn
+  ErrorType,
+  RuleID,
+  Severity,
+  Message,
+  Line,
+  Column,
+  NodeType,
+  MessageId,
+  EndLine,
+  EndColumn
 ) => {
-	const error = await Error.create({
-		ErrorType,
-		Severity,
-		Message,
-		Line,
-		Column,
-		NodeType,
-		MessageId,
-		EndLine,
-		EndColumn
-	});
-	return error._id;
+  const error = await Error.create({
+    ErrorType,
+    Severity,
+    Message,
+    Line,
+    Column,
+    NodeType,
+    MessageId,
+    EndLine,
+    EndColumn,
+  });
+  return error._id;
 };
 
 exports.addPYError = async (
-	ErrorType,
-	Severity,
-	Filename,
-	Message,
-	Confidence,
-	SeverityText,
-	CweLink,
-	LineNumber,
-	LineRange,
-	TestName,
-	TestID
+  ErrorType,
+  Severity,
+  Filename,
+  ZipFileName,
+  Message,
+  Confidence,
+  SeverityText,
+  CweLink,
+  LineNumber,
+  LineRange,
+  TestName,
+  TestID
 ) => {
-	const PYerror = await PYError.create({
-		ErrorType,
-		Severity,
-		Filename,
-		Message,
-		Confidence,
-		SeverityText,
-		CweLink,
-		LineNumber,
-		LineRange,
-		TestName,
-		TestID
-	});
-	return PYerror._id;
+  const PYerror = await PYError.create({
+    ErrorType,
+    Severity,
+    Filename,
+    ZipFileName,
+    Message,
+    Confidence,
+    SeverityText,
+    CweLink,
+    LineNumber,
+    LineRange,
+    TestName,
+    TestID,
+  });
+  return PYerror._id;
 };
 
-
 exports.addFile = async (
-	Name,
-	ErrorCount,
-	FatalErrorCount,
-	WarningCount,
-	FixableErrorCount,
-	FixableWarningCount,
-	Source,
-	Errors,
-	PyErrors,
-	SeverityScore,
-	isPyFile
+  Name,
+  ErrorCount,
+  FatalErrorCount,
+  WarningCount,
+  FixableErrorCount,
+  FixableWarningCount,
+  Source,
+  Errors,
+  PyErrors,
+  SeverityScore,
+  isPyFile
 ) => {
-	return await File.create({
-		Name,
-		ErrorCount,
-		FatalErrorCount,
-		WarningCount,
-		FixableErrorCount,
-		FixableWarningCount,
-		Source,
-		Errors,
-		PyErrors,
-		SeverityScore,
-		isPyFile
-	});
+  return await File.create({
+    Name,
+    ErrorCount,
+    FatalErrorCount,
+    WarningCount,
+    FixableErrorCount,
+    FixableWarningCount,
+    Source,
+    Errors,
+    PyErrors,
+    SeverityScore,
+    isPyFile,
+  });
 };
 
 exports.addFileToStudent = async (StudentId, FileID) => {
-	// (await ZipFile.findById(StudentId)).Files.push(FileID).save();
+  // (await ZipFile.findById(StudentId)).Files.push(FileID).save();
 
-	return await Student.updateOne(
-		{ _id: StudentId },
-		{
-			$push: {
-				Files: FileID,
-			}
-		}
-	);
+  return await Student.updateOne(
+    { _id: StudentId },
+    {
+      $push: {
+        Files: FileID,
+      },
+    }
+  );
 };
 exports.addStudentsToZipFile = async (ZipFileId, Students) => {
-	//https://docs.mongodb.com/mongodb-shell/crud/update/
-	return await ZipFile.updateOne(
-		{ _id: ZipFileId },
-		{
-			$set: {
-				Students: Students,
-			}
-		}
-	);
+  //https://docs.mongodb.com/mongodb-shell/crud/update/
+  return await ZipFile.updateOne(
+    { _id: ZipFileId },
+    {
+      $set: {
+        Students: Students,
+      },
+    }
+  );
 };
 
 exports.updateZipFile = async (ZipFileID, ErrorCount, SeverityScore) => {
-	await ZipFile.findById(ZipFileID).updateOne({ ErrorCount, SeverityScore });
+  await ZipFile.findById(ZipFileID).updateOne({ ErrorCount, SeverityScore });
 };
 
 exports.updateStudent = async (StudentID, SeverityScore) => {
-	await Student.findById(StudentID).updateOne({ SeverityScore });
+  await Student.findById(StudentID).updateOne({ SeverityScore });
 };
 
 exports.getZipFile = async (id) => {
-	const zipFile = await ZipFile.findById(id)
-		.lean()
-		.populate({
-			path: "Students",
-			populate: {
-				path: "Files",
-				model: "File",
-				populate: [
-					{ path: "Errors", model: "Error" }, 
-					{ path: "PyErrors", model: "PYError" }
-				]
-			}
-		});
+  const zipFile = await ZipFile.findById(id)
+    .lean()
+    .populate({
+      path: "Students",
+      populate: {
+        path: "Files",
+        model: "File",
+        populate: [
+          { path: "Errors", model: "Error" },
+          { path: "PyErrors", model: "PYError" },
+        ],
+      },
+    });
 
-	zipFile.Students.forEach((student, i) => {
-		student.Files.forEach((file, j) => {
-			if (file.Errors) {
-				file.Errors.forEach((error, k) => {
-					const updatedError = {
-						ErrorType: ErrorList[error["ErrorType"]],
-						Line: error.Line,
-						Column: error.Column,
-						NodeType: error.NodeType,
-						MessageId: error.MessageId,
-						EndLine: error.EndLine,
-						EndColumn: error.EndColumn,
-					};
-					zipFile.Students[i].Files[j].Errors[k] = updatedError;
-				});
-			}
-			if (file.PyErrors) {
-				file.PyErrors.forEach((error, k) => {
-					const updatedError = {
-						ErrorType: PYErrorList[error["ErrorType"]],
-						Line: error.LineNumber,
-						Message: error.Message
-					};
-					zipFile.Students[i].Files[j].PyErrors[k] = updatedError;
-				});
-			}
-		});
-	});
-	return zipFile;
+  zipFile.Students.forEach((student, i) => {
+    student.Files.forEach((file, j) => {
+      if (file.Errors) {
+        file.Errors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: ErrorList[error["ErrorType"]],
+            Line: error.Line,
+            Column: error.Column,
+            NodeType: error.NodeType,
+            MessageId: error.MessageId,
+            EndLine: error.EndLine,
+            EndColumn: error.EndColumn,
+          };
+          zipFile.Students[i].Files[j].Errors[k] = updatedError;
+        });
+      }
+      if (file.PyErrors) {
+        file.PyErrors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: PYErrorList[error["ErrorType"]],
+            Line: error.LineNumber,
+            Message: error.Message,
+          };
+          zipFile.Students[i].Files[j].PyErrors[k] = updatedError;
+        });
+      }
+    });
+  });
+  return zipFile;
 };
 
 exports.getZipFileRaw = async (id) => {
-	return (await ZipFile.findById(id)
-		.lean()
-		.populate({
-			path: "Students",
-			populate: {
-				path: "Files",
-				model: "File",
-				populate: { path: "Errors", model: "Error" },
-			}
-		}));
+  return await ZipFile.findById(id)
+    .lean()
+    .populate({
+      path: "Students",
+      populate: {
+        path: "Files",
+        model: "File",
+        populate: { path: "Errors", model: "Error" },
+      },
+    });
 };
 
-exports.getZipFiles = async (owner) =>
-{
-	if (owner)
-	{
-		return await ZipFile.find({Owner: owner}).exec();
-	}
-	else
-	{
-		return await ZipFile.find({}).exec();
-	}
+exports.getZipFiles = async (owner) => {
+  if (owner) {
+    return await ZipFile.find({ Owner: owner }).exec();
+  } else {
+    return await ZipFile.find({}).exec();
+  }
 };
 exports.getAllStudentFiles = async () => {
-	return await Student.find({}).exec();
+  return await Student.find({}).exec();
 };
-exports.deleteZipFolder= async (zipFolderID) => {
-	const zipFile = await ZipFile.findById(zipFolderID)
-	.lean()
-	.populate({
-		path: "Students",
-		populate: {
-			path: "Files",
-			model: "File",
-			populate: { path: "Errors", model: "Error" },
-		}
-	});
-	zipFile.Students.forEach(async (student, i) => {
-		student.Files.forEach(async (file, j) => {
-			file.Errors.forEach(async (error, k) => {
-                await Error.deleteOne({id: error._id}).exec();
-			});
-			await File.deleteOne({id: file._id}).exec();
-		});
-		await Student.deleteOne({id: student._id}).exec();
-	});
-	await ZipFile.deleteOne({id: zipFile._id}).exec();
+exports.deleteZipFolder = async (zipFolderID) => {
+  const zipFile = await ZipFile.findById(zipFolderID)
+    .lean()
+    .populate({
+      path: "Students",
+      populate: {
+        path: "Files",
+        model: "File",
+        populate: { path: "Errors", model: "Error" },
+      },
+    });
+  zipFile.Students.forEach(async (student, i) => {
+    student.Files.forEach(async (file, j) => {
+      file.Errors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+      await File.deleteOne({ id: file._id }).exec();
+    });
+    await Student.deleteOne({ id: student._id }).exec();
+  });
+  await ZipFile.deleteOne({ id: zipFile._id }).exec();
 };
-exports.clearDatabase= async () =>
-{
-	await ZipFile.deleteMany();
-	await Student.deleteMany();
-	await File.deleteMany();
-	await Error.deleteMany();
+exports.clearDatabase = async () => {
+  await ZipFile.deleteMany();
+  await Student.deleteMany();
+  await File.deleteMany();
+  await Error.deleteMany();
 };
