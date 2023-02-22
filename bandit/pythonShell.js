@@ -22,10 +22,10 @@ exports.runBandit = async (dirToPyFiles, isJson) => {
     //dir actually at index.js  (codechomper root)
     if (isJson === true) {
       PythonShell.run("/main.py", optionsJSON, (err, results) => {
-        console.log("the pythonshell results are: ");
-        console.log(results);
+        //console.log("the pythonshell results are: ");
+        //console.log(results);
         if (err) {
-          console.log("there was an error in shelloutput");
+          //console.log("there was an error in shelloutput");
           return reject(err);
         }
         return resolve(results);

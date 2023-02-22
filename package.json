@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "start:dev": "nodemon index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint \"**/*.{js,ts}\"",
     "fix": "eslint --fix \"**/*.{js,ts}\"",
@@ -31,6 +31,7 @@
     "node-stream-zip": "^1.15.0",
     "nodemon": "^2.0.15",
     "package.json": "^2.0.1",
+    "python-shell": "^3.0.1",
     "python-shell": "^3.0.1"
     "eslint-plugin-no-secrets": "^0.8.9"
   },

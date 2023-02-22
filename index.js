@@ -204,9 +204,13 @@ app.delete("/deleteAll", async (req, res) => {
     res.status(403).json(false);
   }
 });
+
 //This function is performed when someone uploads a zipfolder to our backend
 app.post("/upload", async (req, res) => {
+  //checks to make sure user is logged in
+  //if they are not, return status 403 (client forbidden from accessing url)
   if (!req.session.username) {
+    console.log("NO USERNAME!");
     res.status(403).json(false);
     return;
   }
@@ -214,154 +218,323 @@ app.post("/upload", async (req, res) => {
   const zipFileName = zipFile.name;
 
   // submitted file must be a zip or error is thrown
+  // checks via substring with last 4 characters to match ".zip"
   if (zipFileName.substring(zipFileName.length - 4) !== ".zip") {
-    return res.status(400).json("Error: Not a zip file");
+    console.log("ZIP FILE EXTENSION NOT PRESENT!");
+    res.status(400).json("Error: Not a zip file");
+    return;
   }
 
   const fileLocation = `${"testFiles/"}${zipFileName}`;
 
-  //make a folder called extracted
+  //make a folder called extracted and testFiles if they don't exist
   if (!fs.existsSync("extracted")) {
     fs.mkdirSync("extracted");
   }
+  if (!fs.existsSync("testFiles")) {
+    fs.mkdirSync("testFiles");
+  }
+  fsExtra.emptyDirSync("./extracted"); // REMOVE??
+  fsExtra.emptyDirSync("./testFiles"); // REMOVE??
 
+  //console.log(zipFile);
   //extract files into this folder
   zipFile.mv(fileLocation, async (err) => {
     // extract all student submissions from main zip file
 
-    fsExtra.emptyDirSync("./extracted"); // REMOVE??
+    //empties directory synchronously
 
+    //extract all zip files to ./extracted directory (which was just cleared) -
+    //this probably only support 1x upload at a time (no concurrent users)
+    //console.log(fileLocation);
+    //console.log(zipFile);
+    //console.log(zipFile.name);
     const zipExtractor = new AdmZip(fileLocation);
     zipExtractor.extractAllTo("./extracted", true);
 
-    // extract from any nested zip files --
-    const fileNamesInZipFolder = fs.readdirSync("./extracted");
-    const studentNames = new Set();
+    // extract from any nested zip files
+    //fs.readdirSync reads all files in a folder and returns an array with all the file names in the folder
+    var fileNamesInZipFolder = fs.readdirSync("./extracted");
+    //console.log(fileNamesInZipFolder);
+    //create new set for studentNames --- TODO: may need to check against database going forward
+    const studentNames = new Set(); // TODO: may need to add student ID set and database models to store (the most unique identifier)
 
+    //we will first unzip an inner zip folders (supports ONE LEVEL of inner zips)
+    //this will place all inner zip file contents in the root ./extracted folder for processing
+    //TODO: maybe delete this functionality unless needed by professor
     fileNamesInZipFolder.forEach((file) => {
-      const currentStudentName = file.substring(0, file.indexOf("_"));
-      // Make sure its not empty before adding it to Hashset, The Set prevents repeats
-      //ZAK - I moved this double check to before following if... makes more logical sense to check if it's a .zip before adding it to studentlist
       if (path.extname(file) == ".zip") {
         const innerZipFileExtractor = new AdmZip("./extracted/" + file);
-        innerZipFileExtractor.extractAllTo(
-          "./extracted/" + file.substring(0, file.indexOf("_")),
-          true
-        );
-        fsExtra.remove("./extracted/" + file);
-      } else if (currentStudentName) {
-        studentNames.add(currentStudentName);
+        innerZipFileExtractor.extractAllTo("./extracted/", true);
       }
 
-      // Zip folders within the zip folder
-    });
+      //fileNamesInZipFolder.forEach((file) => {
+      // if (file.indexOf("_") == -1) {
+      //  return res
+      //   .status(400)
+      //   .json(
+      //    "Error: Naming convention of 1 or more files is not supported.  Parsing occurs on underscore ('_'). Correct Format: lastfirst_studentIDnum_filename.extension"
+      //  );
+      // }
+      const currentStudentName = file;
+      // Make sure its not empty before adding it to Hashset, The Set prevents repeats
+      //ZAK - I moved this double check to before following if... makes more logical sense to check if it's a .zip before adding it to studentlist
+      //if (path.extname(file) == ".zip") {
+      //  const innerZipFileExtractor = new AdmZip("./extracted/" + file);
+      //  innerZipFileExtractor.extractAllTo(
+      //    "./extracted/" + file.substring(0, file.indexOf("_")),
+      //    true
+      //  );
+      //  fsExtra.remove("./extracted/" + file);
+      // } else if (currentStudentName) {
+      studentNames.add(currentStudentName);
+      //}
 
+      // Zip folders within the zip folder
+      //});
+    });
+    //function definition used below to check for python files
     const hasPyFiles = (element) => {
+      //console.log(element);
       if (path.extname(element) == ".py") return true;
       else return false;
     };
 
-    console.log("Through dir is: ");
-    console.log(throughDirectory("./extracted"));
+    //function definition used below to check for js files
+    const hasJSFiles = (element) => {
+      if (path.extname(element) == ".js") return true;
+      else return false;
+    };
 
-    if (fileNamesInZipFolder.some(hasPyFiles)) {
-      // there is at least 1 py file in the zipfile uploaded
-      console.log("inside .py only code section");
+    //
+    //console.log("Through dir is: ");
+    //console.log(throughDirectory("./extracted"));
 
-      const mytest = await Bandit.runBandit("./extracted/", true);
-      ///console.log(mytest[metrics]);
-      console.log("my childs output is: ");
+    //after inner zip extraction above, will reset all fileNameInZipFolder Array for processing below
+    fileNamesInZipFolder = fs.readdirSync("./extracted");
 
-      console.dir(mytest, { maxArrayLength: null });
+    //setup new eslint instance
+    const eslint = new ESLint();
 
-      console.log("JSON FORMAT??");
-      console.log(mytest.toString());
+    var javaResults = new Map();
+    var pythonResults = new Map();
 
-      const pyResultsJSON = JSON.parse(mytest.toString());
-      const results = pyResultsJSON.results;
-      const metrics = pyResultsJSON.metrics;
-      console.log("metrics");
-      console.log(metrics);
-
-      console.log("results");
-      console.log(results);
-
-      console.log("Through dir is: ");
-      console.log(throughDirectory("./extracted"));
-
-      console.log("num files tested is:");
-      console.log(Object.keys(pyResultsJSON.metrics).length - 1); // num files tested
-
-      //console.log(results.map((result) => getRelativePath(result.filePath)));
-
-      const zipFileRecord = await DAO.addZipFile(
-        zipFileName,
-        new Date(),
-        req.session.username,
-        Object.keys(pyResultsJSON.metrics).length - 1 // num files tested
-      );
-
-      // This map is used to link student IDs with student names??
-      //seems to add student to a zipFolderID?
-      const studentIDsByName = new Map();
-      await Promise.all(
-        [...studentNames].map(async (studentName) =>
-          studentIDsByName.set(
-            studentName,
-            (
-              await DAO.addStudent(studentName, zipFileRecord._id)
-            )._id //this does not seem to correspond well with the schema... schema is for name, severityscore, files?
-          )
-        )
-      );
-
-      // This map is used to keep the scores of each student in an array
-      const listOfSeverityScoreFilesOwnedByStudents = new Map();
-      studentIDsByName.forEach((value, key) => {
-        listOfSeverityScoreFilesOwnedByStudents.set(value, []);
-      });
-
-      const fileErrorsMap = new Map();
-      let fileErrors = [];
-      const fileErrorsMap2 = await Promise.all(
-        results.map(async (result) => {
-          const relativePath = result.filename;
-
-          console.log(relativePath);
-
-          //get numerical PYError type
-          const currentErrorType = parseInt(result.test_id.substring(1));
-
-          //add Errors to database
-          const error = await DAO.addPYError(
-            currentErrorType,
-            PYErrorTypes[currentErrorType]["Severity"],
-            result.filename.substring(12), //rework if make separate folders for extracted py and js files
-            result.issue_text,
-            result.issue_confidence,
-            result.issue_severity,
-            result.issue_cwe.link,
-            result.line_number,
-            result.line_range,
-            result.test_name,
-            result.test_id
+    //console.log(fileNamesInZipFolder);
+    //process each file in zip folder with bandit or eslint (depending on file type)
+    async function analyzeFiles() {
+      console.log("inside analyze Files");
+      console.log(fileNamesInZipFolder.length);
+      console.log(fileNamesInZipFolder);
+      for (let i = 0; i < fileNamesInZipFolder.length; i++) {
+        //console.log("hasJS: " + hasJSFiles(fileNamesInZipFolder.at(i)));
+        //console.log("hasPY: " + hasPyFiles(fileNamesInZipFolder.at(i)));
+        if (hasJSFiles(fileNamesInZipFolder.at(i))) {
+          console.log("adding java files!");
+          javaResults.set(
+            fileNamesInZipFolder
+              .at(i)
+              .substring(0, fileNamesInZipFolder.at(i).indexOf("_")),
+            await eslint.lintFiles([
+              "./extracted/" + fileNamesInZipFolder.at(i),
+            ])
           );
+        } else if (hasPyFiles(fileNamesInZipFolder.at(i))) {
+          //console.log("analyzing py file... ");
+          pythonResults.set(
+            fileNamesInZipFolder
+              .at(i)
+              .substring(0, fileNamesInZipFolder.at(i).indexOf("_")),
+            await Bandit.runBandit(
+              "./extracted/" + fileNamesInZipFolder.at(i),
+              true
+            )
+          );
+        } else {
+          console.log("we're in else somehow!");
+          //for now, will not throw error, but rather process the valid files present
 
-          //case: no errors for file yet recorded, so add it to map
-          if (!fileErrorsMap.has(result.filename)) {
-            fileErrors = []; // clear?
-            fileErrors.push({ err: error, id: currentErrorType });
-            fileErrorsMap.set(result.filename, fileErrors);
-          } else {
-            // file already in map
-            fileErrors.push({ err: error, id: currentErrorType });
-            fileErrorsMap.set(result.filename, fileErrors);
+          return -1;
+        }
+        //console.log("super tests: ");
+        //console.log("eslint: " + result);
+        //console.log(result);
+        //console.log(result.at(0));
+        //console.log(result.at(0).messages.at(0).ruleId);
+        //console.log("bandit: " + mytest);
+      }
+    }
+    //console.log("TEST TEST");
+    var validFiles = await analyzeFiles();
+    if (validFiles == -1) {
+      res
+        .status(400)
+        .json("Error: Zip Files contains non java or python files");
+      return;
+    }
+    console.log(pythonResults);
+    console.log(javaResults);
+
+    //add a record of the parsed zip file which includes:
+    //name, data, owner (currently logged in user), filecount
+    const fileCount = javaResults.size + pythonResults.size;
+    console.log(fileCount);
+    const zipFileRecord = await DAO.addZipFile(
+      zipFileName,
+      new Date(),
+      req.session.username,
+      fileCount, // num files tested (java + python
+      javaResults.size,
+      pythonResults.size
+    );
+
+    //add a student record from each file parsed in the zip
+    //includes name, zipfolderID (mongo ID of ZipFile), severity score, file
+    const studentNameandMongoID = new Map();
+    await Promise.all(
+      [...studentNames].map(async (studentName) =>
+        studentNameandMongoID.set(
+          studentName,
+          (
+            await DAO.addStudent(studentName, zipFileRecord._id)
+          )._id //this does not seem to correspond well with the schema... schema is for name, severityscore, files?
+        )
+      )
+    );
+
+    // This map is used to keep the scores of each student in an array
+    //array is initially empty
+    const listOfSeverityScoreFilesOwnedByStudents = new Map();
+    studentNameandMongoID.forEach((value, key) => {
+      listOfSeverityScoreFilesOwnedByStudents.set(value, []);
+    });
+
+    //TODO DELETE THIS LINE
+    //if (fileNamesInZipFolder.some(hasPyFiles)) {
+    // there is at least 1 py file in the zipfile uploaded
+    //console.log("inside .py only code section");
+
+    //const mytest = await Bandit.runBandit("./extracted/", true);
+    ///console.log(mytest[metrics]);
+    //console.log("my childs output is: ");
+
+    //console.dir(mytest, { maxArrayLength: null });
+
+    //console.log("JSON FORMAT??");
+    //console.log(mytest.toString());
+
+    //const pyResultsJSON = JSON.parse(mytest.toString());
+
+    //const results = pyResultsJSON.results;
+    const results = new Array();
+    //const metrics = pyResultsJSON.metrics;
+    const metrics = new Array();
+
+    //this function will separate python reults into results array and metrics arrays
+    pythonResults.forEach((value, key) => {
+      const tempObj = JSON.parse(value.at(0));
+      //console.log(tempObj);
+      //console.log("logging python results");
+      //console.log(tempObj.results);
+      results.push(tempObj.results);
+      metrics.push(tempObj.metrics);
+    });
+
+    console.log("metrics");
+    console.log(metrics);
+
+    console.log("results");
+    console.log(results);
+
+    //console.log("Through dir is: ");
+    //console.log(throughDirectory("./extracted"));
+
+    //console.log("num files tested is:");
+    //console.log(Object.keys(pyResultsJSON.metrics).length - 1); // num files tested
+
+    //console.log(results.map((result) => getRelativePath(result.filePath)));
+    //add a student record from each file parsed in the zip
+    //includes name, zipfolderID, severity score, file
+    // const studentIDsByName = new Map();
+    // await Promise.all(
+    //  [...studentNames].map(async (studentName) =>
+    //    studentIDsByName.set(
+    //     studentName,
+    //     (
+    //      await DAO.addStudent(studentName, zipFileRecord._id)
+    //    )._id //this does not seem to correspond well with the schema... schema is for name, severityscore, files?
+    //  )
+    // )
+    // );
+
+    const fileErrorsMap = new Map();
+    let fileErrors = [];
+    const fileErrorsMap2 = await Promise.all(
+      results.map(async (result) => {
+        //get numerical PYError type
+        console.log("results length: " + result.length);
+
+        if (result.length > 0) {
+          for (let i = 0; i < result.length; i++) {
+            console.log(result.at(i).test_id.substring(1));
+
+            const currentErrorType = parseInt(
+              result.at(i).test_id.substring(1)
+            );
+            console.log(
+              "pyerror number: " + PYErrorTypes[currentErrorType]["Severity"]
+            );
+            console.log(
+              currentErrorType,
+              PYErrorTypes[currentErrorType]["Severity"],
+              result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
+              zipFileName,
+              result.at(i).issue_text,
+              result.at(i).issue_confidence,
+              result.at(i).issue_severity,
+              result.at(i).issue_cwe.link,
+              result.at(i).line_number,
+              result.at(i).line_range,
+              result.at(i).test_name,
+              result.at(i).test_id
+            );
+            //console.log(result.test_id.substring(1));
+            //add Errors to database
+            const error = await DAO.addPYError(
+              currentErrorType,
+              PYErrorTypes[currentErrorType]["Severity"],
+              result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
+              zipFileName,
+              result.at(i).issue_text,
+              result.at(i).issue_confidence,
+              result.at(i).issue_severity,
+              result.at(i).issue_cwe.link,
+              result.at(i).line_number,
+              result.at(i).line_range,
+              result.at(i).test_name,
+              result.at(i).test_id
+            );
+
+            //case: no errors for file yet recorded, so add it to map
+            if (!fileErrorsMap.has(result.at(i).filename)) {
+              fileErrors = []; // clear?
+              fileErrors.push({ err: error, id: currentErrorType });
+              fileErrorsMap.set(result.at(i).filename, fileErrors);
+            } else {
+              // file already in map - get filename associated fileErrors array and add error to it
+              //fileErrors.push({ err: error, id: currentErrorType });
+              //fileErrorsMap.set(result.filename, fileErrors);
+              fileErrorsMap
+                .get(result.at(i).filename)
+                .push({ err: error, id: currentErrorType });
+            }
           }
-
-          return fileErrorsMap;
-        })
-      );
-
+        }
+        return fileErrorsMap;
+      })
+    );
+    console.log("MADE IT TO HERE!");
+    console.log(fileErrorsMap.size);
+    if (fileErrorsMap.size > 0) {
       //connect errors to fileRecord
       for (let [key, value] of fileErrorsMap.entries()) {
         //key = filename ; val = array of mongoose schema errors and numerical pyErrorid for the coresponding file
@@ -376,12 +549,13 @@ app.post("/upload", async (req, res) => {
           PYerrors.push(element.err);
         });
         //
-        console.log();
+        //console.log();
+        //TODO: redo get severity score function
         const fileSeverity = getSeverityScore(severityScores, -1);
         var path1 = require("path");
         const relativePath = path1.basename(key);
 
-        //Stores file on the database
+        //Stores file on the database ?? not actually storing the file just name and length
         const fileRecord = await DAO.addFile(
           relativePath,
           value.length,
@@ -395,214 +569,225 @@ app.post("/upload", async (req, res) => {
           fileSeverity,
           true
         );
-        console.log("relative path:");
-        console.log(relativePath);
-        const currentStudentID = getStudentIDFromRelPath(
-          relativePath,
-          studentIDsByName
-        );
-        console.log(currentStudentID);
-        console.log(listOfSeverityScoreFilesOwnedByStudents);
-
-        listOfSeverityScoreFilesOwnedByStudents
-          .get(currentStudentID)
-          .push(fileSeverity);
-        await DAO.addFileToStudent(currentStudentID, fileRecord._id);
-      } // out of bandit loops
-
-      //add the list of the students to the zip file on database
-      await DAO.addStudentsToZipFile(
-        zipFileRecord._id,
-        Array.from(studentIDsByName.values())
-      );
-
-      //Where we store the results to then further calculate the classes severity score
-      const ListOfStudentSeverityScores = [];
-      //go through students and calculate and add their severity scores
-      for (const [
-        key,
-        value,
-      ] of listOfSeverityScoreFilesOwnedByStudents.entries(
-        listOfSeverityScoreFilesOwnedByStudents
-      )) {
-        temp = getSeverityScore(value);
-        //let average = value.reduce((a, b) => a + b) / value.length;
-        ListOfStudentSeverityScores.push(temp);
-        await DAO.updateStudent(key, temp);
       }
-
-      ListOfStudentSeverityScores.sort();
-      for (i = 0; i < Math.ceil(ListOfStudentSeverityScores.length / 8); i++) {
-        ListOfStudentSeverityScores.push(
-          ListOfStudentSeverityScores[
-            Math.floor(ListOfStudentSeverityScores.length / 2)
-          ]
-        );
-      }
-
-      let average = Math.ceil(
-        ListOfStudentSeverityScores.reduce((a, b) => a + b) /
-          ListOfStudentSeverityScores.length
-      );
-      //adds the error count and severity score
-      await DAO.updateZipFile(zipFileRecord._id, results.length, average);
-
-      //clear out the dir
-      fsExtra.emptyDirSync("./extracted");
-      res.json({});
-
-    // ##### RUNS ESLINT IF THERE ARE NO PYTHON FILES IN FOLDER ##### //  
-    // if clause running Bandit starts on line 266
-    } else {
-      /**
-       * Setup ESLINT and run on all the files in this folder. Uses eslint Node.js API function lintFiles to
-       * do linting and return all relevant info in results object. Will check for rules identified in the config
-       * file .eslintrc.js and in ErrorTypes.js. See .eslintrc.js file for additional comment.
-       */
-      
-      const eslint = new ESLint();
-      const results = await eslint.lintFiles(["./extracted/**/*.js"]);
-
-      // fileNamesInZipFolder
-      const zipFileRecord = await DAO.addZipFile(
-        zipFileName,
-        new Date(),
-        req.session.username,
-        results.length
-      );
-
-      // This map is used to link student IDs with student names
-      const studentIDsByName = new Map();
-      await Promise.all(
-        [...studentNames].map(async (studentName) =>
-          studentIDsByName.set(
-            studentName,
-            (
-              await DAO.addStudent(studentName, zipFileRecord._id)
-            )._id
-          )
-        )
-      );
-
-      // This map is used to keep the scores of each student in an array
-      const listOfSeverityScoreFilesOwnedByStudents = new Map();
-      studentIDsByName.forEach((value, key) => {
-        listOfSeverityScoreFilesOwnedByStudents.set(value, []);
-      });
-
-      //Go tThrough ESlint detected errors
-      await Promise.all(
-        results.map(async (result) => {
-          const relativePath = getRelativePath(result.filePath, false);
-
-          const severityScores = [];
-
-          //add Errors to database
-          const errors = await Promise.all(
-            result.messages.map((message) => {
-
-              const currentErrorType = convertErrorIDToType(message.ruleId);
-              
-
-              severityScores.push(ErrorTypes[currentErrorType]["Severity"]);
-              return DAO.addError(
-                currentErrorType,
-                message.ruleId,
-                message.severity,
-                message.message,
-                message.line,
-                message.column,
-                message.nodeType,
-                message.messageId,
-                message.endLine,
-                message.endColumn
-              );
-            })
-          );
-
-          //TODO TEST THIS FUNCTION
-          //gets the severity score of current file
-          const fileSeverity = getSeverityScore(severityScores, -1);
-          console.log("file Severity is: ");
-          console.log(fileSeverity);
-
-          //Stores file on the database
-          const fileRecord = await DAO.addFile(
-            relativePath,
-            result.errorCount,
-            result.fatalErrorCount,
-            result.warningCount,
-            result.fixableErrorCount,
-            result.fixableWarningCount,
-            result.source,
-            errors,
-            null,
-            fileSeverity,
-            false
-          );
-
-          //Gets the current student DB id - RELATIVEPATH MUST BE IN CANVAS FORMAT
-          const currentStudentID = getStudentIDFromRelPath(
-            relativePath,
-            studentIDsByName
-          );
-
-          //adding files severity scores to the student so we can calculate the students severity score
-          listOfSeverityScoreFilesOwnedByStudents
-            .get(currentStudentID)
-            .push(fileSeverity);
-          DAO.addFileToStudent(currentStudentID, fileRecord._id);
-        })
-      ); //Out of ESLINT Loop
-
-      //add the list of the students to the zip file on database
-      await DAO.addStudentsToZipFile(
-        zipFileRecord._id,
-        Array.from(studentIDsByName.values())
-      );
-
-      //Where we store the results to then further calculate the classes severity score
-      const ListOfStudentSeverityScores = [];
-      //go through students and calculate and add their severity scores
-      for (const [
-        key,
-        value,
-      ] of listOfSeverityScoreFilesOwnedByStudents.entries(
-        listOfSeverityScoreFilesOwnedByStudents
-      )) {
-        temp = getSeverityScore(value);
-        //let average = value.reduce((a, b) => a + b) / value.length;
-        ListOfStudentSeverityScores.push(temp);
-        await DAO.updateStudent(key, temp);
-      }
-
-      ListOfStudentSeverityScores.sort();
-      for (i = 0; i < Math.ceil(ListOfStudentSeverityScores.length / 8); i++) {
-        ListOfStudentSeverityScores.push(
-          ListOfStudentSeverityScores[
-            Math.floor(ListOfStudentSeverityScores.length / 2)
-          ]
-        );
-      }
-
-      let average = Math.ceil(
-        ListOfStudentSeverityScores.reduce((a, b) => a + b) /
-          ListOfStudentSeverityScores.length
-      );
-      //adds the error count and severity score
-      await DAO.updateZipFile(zipFileRecord._id, results.length, average);
-
-      // const responseData = results.map((result) => ({
-      // 	filePath: result.filePath.substring(
-      // 		result.filePath.lastIndexOf("/") + 1
-      // 	),
-      // 	errorCount: result.errorCount,
-      // 	messages: result.messages,
-      // }));
-
-      fsExtra.emptyDirSync("./extracted");
-      res.status(200).json(true);
     }
+    console.log("relative path:");
+    //console.log(relativePath);
+
+    //const currentStudentID = getStudentIDFromRelPath(
+    //  relativePath,
+    //  studentIDsByName
+    // );
+    // console.log(currentStudentID);
+    // console.log(listOfSeverityScoreFilesOwnedByStudents);
+
+    // listOfSeverityScoreFilesOwnedByStudents
+    //   .get(currentStudentID)
+    //   .push(fileSeverity);
+    // await DAO.addFileToStudent(currentStudentID, fileRecord._id);
+    //} // out of bandit loops
+
+    //add the list of the students to the zip file on database
+    //await DAO.addStudentsToZipFile(
+    //  zipFileRecord._id,
+    //  Array.from(studentIDsByName.values())
+    //);
+
+    //Where we store the results to then further calculate the classes severity score
+    //const ListOfStudentSeverityScores = [];
+    //go through students and calculate and add their severity scores
+    //for (const [
+    // key,
+    // value,
+    //] of listOfSeverityScoreFilesOwnedByStudents.entries(
+    //  listOfSeverityScoreFilesOwnedByStudents
+    //)) {
+    //  temp = getSeverityScore(value);
+    //let average = value.reduce((a, b) => a + b) / value.length;
+    // ListOfStudentSeverityScores.push(temp);
+    //  await DAO.updateStudent(key, temp);
+    //}
+
+    //ListOfStudentSeverityScores.sort();
+    //for (i = 0; i < Math.ceil(ListOfStudentSeverityScores.length / 8); i++) {
+    //  ListOfStudentSeverityScores.push(
+    //   ListOfStudentSeverityScores[
+    //      Math.floor(ListOfStudentSeverityScores.length / 2)
+    //   ]
+    //  );
+    // }
+
+    //let average = Math.ceil(
+    //  ListOfStudentSeverityScores.reduce((a, b) => a + b) /
+    //    ListOfStudentSeverityScores.length
+    //);
+    //adds the error count and severity score
+    //await DAO.updateZipFile(zipFileRecord._id, results.length, average);
+
+    //clear out the dir
+    // fsExtra.emptyDirSync("./extracted");
+    //res.json({});
+
+    // ##### RUNS ESLINT IF THERE ARE NO PYTHON FILES IN FOLDER ##### //
+    // if clause running Bandit starts on line 266
+    //} else {
+    console.log("START OF JAVA FILE PROCESSING");
+    /**
+     * Setup ESLINT and run on all the files in this folder. Uses eslint Node.js API function lintFiles to
+     * do linting and return all relevant info in results object. Will check for rules identified in the config
+     * file .eslintrc.js and in ErrorTypes.js. See .eslintrc.js file for additional comment.
+     */
+
+    //const eslint = new ESLint(); //ALREADY INSTANTIATED ABOVE
+    //const results = await eslint.lintFiles(["./extracted/**/*.js"]);
+
+    // fileNamesInZipFolder
+
+    //const zipFileRecord = await DAO.addZipFile( //ALREADY DONE ABOVE IN PYTHON
+    //  zipFileName,
+    //  new Date(),
+    //  req.session.username,
+    //  results.length
+    //);
+
+    // This map is used to link student IDs with student names
+    //const studentIDsByName = new Map();
+    //await Promise.all(
+    //  [...studentNames].map(async (studentName) =>
+    //    studentIDsByName.set(
+    //      studentName,
+    //      (
+    //       await DAO.addStudent(studentName, zipFileRecord._id)
+    //     )._id
+    //    )
+    // )
+    // );
+
+    // This map is used to keep the scores of each student in an array
+    //const listOfSeverityScoreFilesOwnedByStudents = new Map();
+    //studentIDsByName.forEach((value, key) => {
+    //  listOfSeverityScoreFilesOwnedByStudents.set(value, []);
+    //});
+    console.log("THE JAVA RESULTS: " + javaResults);
+    console.log(javaResults);
+
+    const javaResultArray = new Array();
+    javaResults.forEach((value, key) => {
+      javaResultArray.push(value);
+      console.log(value);
+    });
+
+    //Go tThrough ESlint detected errors
+    await Promise.all(
+      javaResultArray.map(async (result) => {
+        console.log(result.at(0).filePath);
+        console.log(result.at(0).messages);
+        const relativePath = getRelativePath(result.at(0).filePath, false);
+
+        const severityScores = [];
+
+        //add Errors to database
+        const errors = await Promise.all(
+          result.at(0).messages.map((message) => {
+            const currentErrorType = convertErrorIDToType(message.ruleId);
+
+            severityScores.push(ErrorTypes[currentErrorType]["Severity"]);
+            return DAO.addError(
+              currentErrorType,
+              message.ruleId,
+              message.severity,
+              message.message,
+              message.line,
+              message.column,
+              message.nodeType,
+              message.messageId,
+              message.endLine,
+              message.endColumn
+            );
+          })
+        );
+
+        //TODO DELETE THIS FUNCTION!! no need for severity score
+        //gets the severity score of current file
+        //current placeholder of 0 to avoid crashes
+        const fileSeverity = 0;
+        //getSeverityScore(severityScores, -1);
+        //console.log("file Severity is: ");
+        //console.log(fileSeverity);
+
+        //Stores file on the database
+        const fileRecord = await DAO.addFile(
+          relativePath,
+          result.at(0).errorCount,
+          result.at(0).fatalErrorCount,
+          result.at(0).warningCount,
+          result.at(0).fixableErrorCount,
+          result.at(0).fixableWarningCount,
+          result.at(0).source,
+          errors,
+          null,
+          fileSeverity,
+          false
+        );
+
+        //Gets the current student DB id - RELATIVEPATH MUST BE IN CANVAS FORMAT
+        // const currentStudentID = getStudentIDFromRelPath(
+        //   relativePath,
+        //   studentIDsByName
+        // );
+
+        // adding files severity scores to the student so we can calculate the students severity score
+        //listOfSeverityScoreFilesOwnedByStudents
+        //  .get(currentStudentID)
+        //  .push(fileSeverity);
+        //DAO.addFileToStudent(currentStudentID, fileRecord._id);
+      })
+    ); //Out of ESLINT Loop
+
+    //add the list of the students to the zip file on database
+    //await DAO.addStudentsToZipFile(
+    //  zipFileRecord._id,
+    //  Array.from(studentIDsByName.values())
+    // );
+
+    //Where we store the results to then further calculate the classes severity score
+    //const ListOfStudentSeverityScores = [];
+    //go through students and calculate and add their severity scores
+    //for (const [key, value] of listOfSeverityScoreFilesOwnedByStudents.entries(
+    //  listOfSeverityScoreFilesOwnedByStudents
+    //)) {
+    //  temp = getSeverityScore(value);
+    //let average = value.reduce((a, b) => a + b) / value.length;
+    //  ListOfStudentSeverityScores.push(temp);
+    //  await DAO.updateStudent(key, temp);
+    // }
+
+    //ListOfStudentSeverityScores.sort();
+    //for (i = 0; i < Math.ceil(ListOfStudentSeverityScores.length / 8); i++) {
+    //  ListOfStudentSeverityScores.push(
+    //    ListOfStudentSeverityScores[
+    //     Math.floor(ListOfStudentSeverityScores.length / 2)
+    //    ]
+    //  );
+    //}
+
+    // let average = Math.ceil(
+    //  ListOfStudentSeverityScores.reduce((a, b) => a + b) /
+    //    ListOfStudentSeverityScores.length
+    // );
+    //adds the error count and severity score
+    //await DAO.updateZipFile(zipFileRecord._id, results.length, average);
+
+    // const responseData = results.map((result) => ({
+    // 	filePath: result.filePath.substring(
+    // 		result.filePath.lastIndexOf("/") + 1
+    // 	),
+    // 	errorCount: result.errorCount,
+    // 	messages: result.messages,
+    // }));
+
+    fsExtra.emptyDirSync("./extracted");
+    res.status(200).json(true);
   });
 });
 
@@ -812,7 +997,7 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/facebookLogin", async (req, res) => {
+/*app.post("/facebookLogin", async (req, res) => {           TODO DELETE THESE
   if (req.body.facebookId && req.body.username) {
     console.log(req.body);
     var user = await DAO.findFacebookUser(req.body.facebookId);
@@ -864,7 +1049,7 @@ app.post("/googleLogin", async (req, res) => {
     }
     console.log(req.session);
   }
-});
+});*/
 
 app.post("/logout", (req, res) => {
   if (req.session.username) {
