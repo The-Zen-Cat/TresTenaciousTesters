@@ -326,14 +326,12 @@ app.post("/upload", async (req, res) => {
       console.log(fileNamesInZipFolder.length);
       console.log(fileNamesInZipFolder);
       for (let i = 0; i < fileNamesInZipFolder.length; i++) {
-        //console.log("hasJS: " + hasJSFiles(fileNamesInZipFolder.at(i)));
-        //console.log("hasPY: " + hasPyFiles(fileNamesInZipFolder.at(i)));
+        // If two files in the zip folder have the same name, the second one will not be added
+        // Each file in a canvas download has a unique name, so this case is not accounted for
         if (hasJSFiles(fileNamesInZipFolder.at(i))) {
           console.log("adding java files!");
           javaResults.set(
-            fileNamesInZipFolder
-              .at(i)
-              .substring(0, fileNamesInZipFolder.at(i).indexOf("_")),
+            fileNamesInZipFolder.at(i),
             await eslint.lintFiles([
               "./extracted/" + fileNamesInZipFolder.at(i),
             ])
@@ -341,9 +339,7 @@ app.post("/upload", async (req, res) => {
         } else if (hasPyFiles(fileNamesInZipFolder.at(i))) {
           //console.log("analyzing py file... ");
           pythonResults.set(
-            fileNamesInZipFolder
-              .at(i)
-              .substring(0, fileNamesInZipFolder.at(i).indexOf("_")),
+            fileNamesInZipFolder.at(i),
             await Bandit.runBandit(
               "./extracted/" + fileNamesInZipFolder.at(i),
               true
@@ -373,6 +369,8 @@ app.post("/upload", async (req, res) => {
     }
     console.log(pythonResults);
     console.log(javaResults);
+    console.log("javaResults size: ");
+    console.log(javaResults.size);
 
     //add a record of the parsed zip file which includes:
     //name, data, owner (currently logged in user), filecount
