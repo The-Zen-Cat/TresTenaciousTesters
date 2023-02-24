@@ -1,3 +1,5 @@
+/* eslint-disable no-secrets/no-secrets */
+// ^ Because it catches the urls
 exports.ErrorList = {};
 exports.ErrorList[-1] = {
 	Name: "Error",
@@ -380,6 +382,10 @@ exports.ErrorList[39] = {
 	CWE: "https://cwe.mitre.org/data/definitions/1333.html",
 	MoreInfo: "https://github.com/eslint-community/eslint-plugin-security/blob/main/docs/regular-expression-dos-and-node.md"
 };
+exports.ErrorList[40] = {
+	Language: "JavaScript",
+	Name: ""
+}
 
 
 //TO-DO: add all python errors
