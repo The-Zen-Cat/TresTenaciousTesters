@@ -791,6 +791,14 @@ app.post("/upload", async (req, res) => {
   });
 });
 
+app.get('*',function(req,res,next){
+  if(req.protocol !== 'https'){
+    res.redirect(`https://${req.header('host')}${req.url}`)
+  }else{
+    next()
+  }
+})
+
 app.get("/getUser", (req, res) => {
   res.json(req.session.username);
 });
