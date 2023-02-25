@@ -30,7 +30,7 @@ module.exports = {
 		sourceType: "module",
 	},
 	rules: {
-		"security-node/detect-absence-of-name-option-in-exrpress-session": 2,
+		"security-node/detect-absence-of-name-option-in-exrpress-session": 2, // exrpress misspelling is correct
 		"security-node/detect-buffer-unsafe-allocation": 2,
 		"security-node/detect-crlf": 2,
 		"security-node/detect-dangerous-redirects": 2,
