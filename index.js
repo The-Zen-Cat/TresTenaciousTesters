@@ -220,7 +220,7 @@ app.post("/upload", async (req, res) => {
   }
   const zipFile = req.files.file;
   const zipFileName = zipFile.name;
-
+  const fileIDArray = new Array();
   // submitted file must be a zip or error is thrown
   // checks via substring with last 4 characters to match ".zip"
   if (zipFileName.substring(zipFileName.length - 4) !== ".zip") {
@@ -261,7 +261,7 @@ app.post("/upload", async (req, res) => {
     var fileNamesInZipFolder = fs.readdirSync("./extracted");
     //console.log(fileNamesInZipFolder);
     //create new set for studentNames --- TODO: may need to check against database going forward
-    const studentNames = new Set(); // TODO: may need to add student ID set and database models to store (the most unique identifier)
+    const studentNames = new Array(); // TODO: may need to add student ID set and database models to store (the most unique identifier)
 
     //we will first unzip an inner zip folders (supports ONE LEVEL of inner zips)
     //this will place all inner zip file contents in the root ./extracted folder for processing
@@ -291,7 +291,7 @@ app.post("/upload", async (req, res) => {
       //  );
       //  fsExtra.remove("./extracted/" + file);
       // } else if (currentStudentName) {
-      studentNames.add(currentStudentName);
+      studentNames.push(currentStudentName);
       //}
 
       // Zip folders within the zip folder
@@ -322,7 +322,7 @@ app.post("/upload", async (req, res) => {
 
     var javaResults = new Map();
     var pythonResults = new Map();
-
+    var totalErrors = 0;
     //console.log(fileNamesInZipFolder);
     //process each file in zip folder with bandit or eslint (depending on file type)
     async function analyzeFiles() {
@@ -364,7 +364,7 @@ app.post("/upload", async (req, res) => {
       }
     }
     //console.log("TEST TEST");
-    var validFiles = await analyzeFiles();
+    var validFiles = await analyzeFiles(); // will have to amend this if trying to allow inner folder (would return -1 with inner folder)
     if (validFiles == -1) {
       res
         .status(400)
@@ -478,7 +478,7 @@ app.post("/upload", async (req, res) => {
         if (result.length > 0) {
           for (let i = 0; i < result.length; i++) {
             console.log(result.at(i).test_id.substring(1));
-
+            totalErrors++;
             const currentErrorType = parseInt(
               result.at(i).test_id.substring(1)
             );
@@ -520,7 +520,7 @@ app.post("/upload", async (req, res) => {
             if (!fileErrorsMap.has(result.at(i).filename)) {
               fileErrors = []; // clear?
               fileErrors.push({ err: error, id: currentErrorType });
-              fileErrorsMap.set(result.at(i).filename, fileErrors);
+              fileErrorsMap.set(result.at(i).filename, fileErrors); //THIS IS USING FILENAME and not unique identifier - duplicate names not allowed?
             } else {
               // file already in map - get filename associated fileErrors array and add error to it
               //fileErrors.push({ err: error, id: currentErrorType });
@@ -569,8 +569,11 @@ app.post("/upload", async (req, res) => {
           null,
           PYerrors,
           fileSeverity,
-          true
+          true,
+          false,
+          zipFileRecord._id
         );
+        fileIDArray.push(fileRecord);
       }
     }
     console.log("relative path:");
@@ -624,7 +627,6 @@ app.post("/upload", async (req, res) => {
     //    ListOfStudentSeverityScores.length
     //);
     //adds the error count and severity score
-    //await DAO.updateZipFile(zipFileRecord._id, results.length, average);
 
     //clear out the dir
     // fsExtra.emptyDirSync("./extracted");
@@ -692,7 +694,7 @@ app.post("/upload", async (req, res) => {
         const errors = await Promise.all(
           result.at(0).messages.map((message) => {
             const currentErrorType = convertErrorIDToType(message.ruleId);
-
+            totalErrors++;
             severityScores.push(ErrorTypes[currentErrorType]["Severity"]);
             return DAO.addError(
               currentErrorType,
@@ -729,8 +731,11 @@ app.post("/upload", async (req, res) => {
           errors,
           null,
           fileSeverity,
-          false
+          false,
+          true,
+          zipFileRecord._id
         );
+        fileIDArray.push(fileRecord);
 
         //Gets the current student DB id - RELATIVEPATH MUST BE IN CANVAS FORMAT
         // const currentStudentID = getStudentIDFromRelPath(
@@ -788,6 +793,9 @@ app.post("/upload", async (req, res) => {
     // 	messages: result.messages,
     // }));
 
+    //error count, severity score for metrics page - SEVERITY SCORE CHANGE FROM 0 HERE!
+    await DAO.updateZipFile(zipFileRecord._id, parseInt(totalErrors), 1);
+    await DAO.updateZipFilesArray(zipFileRecord._id, fileIDArray);
     fsExtra.emptyDirSync("./extracted");
     res.status(200).json(true);
   });
@@ -837,10 +845,8 @@ app.post("/generateReport", async (req, res) => {
         res.status(403).json(false); // 403 notwithstanding to prevent the existence of a file with the specified ID from being ascertained
         return;
       }
-      for (let j = 0; j < file.Students.length; j++) {
-        for (let k = 0; k < file.Students[j].Files.length; k++) {
-          files.push(file.Students[j].Files[k]);
-        }
+      for (let j = 0; j < file.Files.length; j++) {
+        files.push(file.Files[j]);
       }
     }
 

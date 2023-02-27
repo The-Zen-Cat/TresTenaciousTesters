@@ -160,7 +160,9 @@ exports.addFile = async (
   Errors,
   PyErrors,
   SeverityScore,
-  isPyFile
+  isPyFile,
+  isJavaFile,
+  parentZipFileID
 ) => {
   return await File.create({
     Name,
@@ -174,6 +176,8 @@ exports.addFile = async (
     PyErrors,
     SeverityScore,
     isPyFile,
+    isJavaFile,
+    parentZipFileID,
   });
 };
 
@@ -205,6 +209,10 @@ exports.updateZipFile = async (ZipFileID, ErrorCount, SeverityScore) => {
   await ZipFile.findById(ZipFileID).updateOne({ ErrorCount, SeverityScore });
 };
 
+exports.updateZipFilesArray = async (ZipFileID, Files) => {
+  await ZipFile.findById(ZipFileID).updateOne({ Files });
+};
+
 exports.updateStudent = async (StudentID, SeverityScore) => {
   await Student.findById(StudentID).updateOne({ SeverityScore });
 };
@@ -213,44 +221,40 @@ exports.getZipFile = async (id) => {
   const zipFile = await ZipFile.findById(id)
     .lean()
     .populate({
-      path: "Students",
-      populate: {
-        path: "Files",
-        model: "File",
-        populate: [
-          { path: "Errors", model: "Error" },
-          { path: "PyErrors", model: "PYError" },
-        ],
-      },
+      path: "Files",
+      model: "File",
+      populate: [
+        { path: "Errors", model: "Error" },
+        { path: "PyErrors", model: "PYError" },
+      ],
     });
-
-  zipFile.Students.forEach((student, i) => {
-    student.Files.forEach((file, j) => {
-      if (file.Errors) {
-        file.Errors.forEach((error, k) => {
-          const updatedError = {
-            ErrorType: ErrorList[error["ErrorType"]],
-            Line: error.Line,
-            Column: error.Column,
-            NodeType: error.NodeType,
-            MessageId: error.MessageId,
-            EndLine: error.EndLine,
-            EndColumn: error.EndColumn,
-          };
-          zipFile.Students[i].Files[j].Errors[k] = updatedError;
-        });
-      }
-      if (file.PyErrors) {
-        file.PyErrors.forEach((error, k) => {
-          const updatedError = {
-            ErrorType: PYErrorList[error["ErrorType"]],
-            Line: error.LineNumber,
-            Message: error.Message,
-          };
-          zipFile.Students[i].Files[j].PyErrors[k] = updatedError;
-        });
-      }
-    });
+  console.log("hello world");
+  console.log(zipFile);
+  zipFile.Files.forEach((file, i) => {
+    if (file.Errors) {
+      file.Errors.forEach((error, k) => {
+        const updatedError = {
+          ErrorType: ErrorList[error["ErrorType"]],
+          Line: error.Line,
+          Column: error.Column,
+          NodeType: error.NodeType,
+          MessageId: error.MessageId,
+          EndLine: error.EndLine,
+          EndColumn: error.EndColumn,
+        };
+        zipFile.Files[i].Errors[k] = updatedError;
+      });
+    }
+    if (file.PyErrors) {
+      file.PyErrors.forEach((error, k) => {
+        const updatedError = {
+          ErrorType: PYErrorList[error["ErrorType"]],
+          Line: error.LineNumber,
+          Message: error.Message,
+        };
+        zipFile.Files[i].PyErrors[k] = updatedError;
+      });
+    }
   });
   return zipFile;
 };
@@ -282,22 +286,18 @@ exports.deleteZipFolder = async (zipFolderID) => {
   const zipFile = await ZipFile.findById(zipFolderID)
     .lean()
     .populate({
-      path: "Students",
-      populate: {
-        path: "Files",
-        model: "File",
-        populate: { path: "Errors", model: "Error" },
-      },
+      path: "Files",
+      model: "File",
+      populate: { path: "Errors", model: "Error" },
     });
-  zipFile.Students.forEach(async (student, i) => {
-    student.Files.forEach(async (file, j) => {
-      file.Errors.forEach(async (error, k) => {
-        await Error.deleteOne({ id: error._id }).exec();
-      });
-      await File.deleteOne({ id: file._id }).exec();
+
+  zipFile.Files.forEach(async (file, j) => {
+    file.Errors.forEach(async (error, k) => {
+      await Error.deleteOne({ id: error._id }).exec();
     });
-    await Student.deleteOne({ id: student._id }).exec();
+    await File.deleteOne({ id: file._id }).exec();
   });
+
   await ZipFile.deleteOne({ id: zipFile._id }).exec();
 };
 exports.clearDatabase = async () => {
