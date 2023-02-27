@@ -7,16 +7,13 @@
  * ESLint will catch any errors looked for by eslint:recommend whether or not the specific
  * rule is listed in the rules section. If the sdl plugin is including the package.json dependencies and is
  * installed, eslint will check for all rules provided by the plugin at the default severity levels. If the sdl
- * plugin is not installed as a dependency (as is currently the case), eslint will only check for rules specified
- * in the rules section at the given severity level. However, the rule must have an entry in ErrorTypes.js - If it 
- * doesn't, or if the ruleID eslint returns doesn't match
+ * plugin is not installed as a dependency, eslint will only check for rules specified
+ * in the rules section at the given severity level. If both are done, the config file takes precedence.
+ * However, the rule must have an entry in ErrorTypes.js - If it doesn't, or if the ruleID eslint returns doesn't match
  * the name in the ErrorTypes.js entry, the error will be processed as ErrorTypes[-1] (no error). Note the ruleID
  * to Error Type name conversion function replaces all '-' with ' '.
  * 
- * TODO:
- * 
- * - Add all sdl rules to be sure they'll run
- * - Test all security plugin rules - test files available on github
+ * Note: Not all rules for each plugin are enabled. Some are too strict, and some overlap.
 
  */
 
@@ -33,6 +30,18 @@ module.exports = {
 		sourceType: "module",
 	},
 	rules: {
+		"security-node/detect-absence-of-name-option-in-exrpress-session": 2, // exrpress misspelling is correct
+		"security-node/detect-buffer-unsafe-allocation": 2,
+		"security-node/detect-crlf": 2,
+		"security-node/detect-dangerous-redirects": 2,
+		"security-node/detect-nosql-injection": 2,
+		"security-node/detect-option-multiplestatements-in-mysql": 2,
+		"security-node/detect-security-missconfiguration-cookie": 2,
+		"security-node/detect-sql-injection": 2,
+		"security-node/disable-ssl-across-node-server": 2,
+		"security-node/detect-improper-exception-handling": 2,
+		"security-node/detect-unhandled-async-errors": 2,
+		"security-node/detect-unhandled-event-errors": 2,
 		"no-eval": 2,
 		"no-implied-eval": 2,
 		"@microsoft/sdl/no-inner-html": 2,
@@ -45,7 +54,7 @@ module.exports = {
 		"security/detect-disable-mustache-escape": 2,
 		"security/detect-new-buffer": 2,
 		"security/detect-no-csrf-before-method-override": 2,
-		//"security/detect-non-literal-fs-filename": 2, not included - generates error in Index.js
+		"security/detect-non-literal-fs-filename": 2,
 		"security/detect-non-literal-regexp": 2,
 		"security/detect-non-literal-require": 2,
 		//"security/detect-object-injection": 2, not included - generates error in ErrorTypes files
@@ -109,5 +118,5 @@ module.exports = {
 		"use-isnan":0,
 		"valid-typeof":0,
 	},
-	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss", "security"]
+	plugins: ["@microsoft/eslint-plugin-sdl", "no-secrets", "xss", "security", "security-node"]
 };

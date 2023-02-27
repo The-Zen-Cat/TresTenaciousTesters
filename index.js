@@ -1,3 +1,5 @@
+/* eslint-disable security-node/detect-crlf */
+// ^ Because it catches console.log with variables passed in
 require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
@@ -40,6 +42,7 @@ const Bandit = require("./bandit/pythonShell.js");
 
 app.use(cors(corsOptions));
 app.use(
+  // eslint-disable-next-line security-node/detect-absence-of-name-option-in-exrpress-session
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
@@ -153,6 +156,7 @@ function getSeverityScoreStudent(severityScores, count) {
 
 function throughDirectory(__dirname) {
   function* walkSync(dir) {
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     const files = fs.readdirSync(dir, { withFileTypes: true });
     for (const file of files) {
       if (file.isDirectory()) {
