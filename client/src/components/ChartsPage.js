@@ -31,6 +31,7 @@ ChartJS.register(
   BarElement
 );
 
+
 function getRadarData(dataArray) {
   return {
     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
@@ -116,14 +117,14 @@ function getErrors(students) {
     student.Files.map((file) => {
       if (file.Errors) {
         file.Errors.map((error) => {
-          if (error.ErrorType.Severity != 0) {
+          if (error.ErrorType.Severity !== 0) {
             errorList.push(error);
           }
         });
       }
       if (file.PyErrors) {
         file.PyErrors.map((error) => {
-          if (error.ErrorType.Severity != 0) {
+          if (error.ErrorType.Severity !== 0) {
             errorList.push(error);
           }
         });
@@ -146,15 +147,16 @@ function getStandardDeviation(array) {
   );
 }
 
+// Used by ViewMorePage.js
 function ChartsPage(props) {
-  // get list of errors from all students in zip
+  // get list of errors from all students in zip - TODO: ALL FILES, NOT STUDENTS
   const errorList = getErrors(props.file.Students);
 
-  // get frequency of all vulnerabilities in zip file
+  // get frequency of all vulnerabilities in zip file - TODO: THIS MIGHT BE GOOD TO KEEP?
   var freqOfVuln = new Array(10).fill(0);
   errorList.forEach((error) => freqOfVuln[error.ErrorType.Severity - 1]++);
 
-  // get frequency of severities for each student
+  // get frequency of severities for each student - TODO: PROB DON'T KEEP
   var freqOfSev = new Array(10).fill(0);
   props.file.Students.forEach(
     (student) => freqOfSev[student.SeverityScore - 1]++
@@ -251,22 +253,27 @@ function ChartsPage(props) {
   );
 }
 
+// Used by Metrics.js
 function ZipChartsPage(props) {
-  const files = props.files;
+  // props is all zip files current stored
+  const zipfiles = props.files;
 
   // get frequency of zip file vulnerability scores
   var freqOfVuln = new Array(10).fill(0);
-  files.forEach((file) => freqOfVuln[file.severityScore - 1]++);
+  zipfiles.forEach((file) => freqOfVuln[file.severityScore - 1]++);
 
   // get average severity count of the zip files
   var fileSevCount = 0;
-  files.forEach((file) => (fileSevCount += file.severityScore));
-  var fileSevAverage = Math.round(fileSevCount / files.length);
+  zipfiles.forEach((zipfile) => {
+    fileSevCount += zipfile.severityScore;
+  }
+   );
+  var fileSevAverage = Math.round(fileSevCount / zipfiles.length);
 
   // get array of zip file dates and severity scores
   var zipDate = [];
   var zipSev = [];
-  files.forEach((file) => {
+  zipfiles.forEach((file) => {
     zipDate.push(file.date);
     zipSev.push(file.severityScore);
   });
@@ -290,7 +297,7 @@ function ZipChartsPage(props) {
         <Card.Header>Zip Files with Highest Severity Scores</Card.Header>
         <Card.Content>
           <List>
-            {files
+            {zipfiles
               .sort((a, b) => b.severityScore - a.severityScore)
               .slice(0, 5)
               .map((file) => (
