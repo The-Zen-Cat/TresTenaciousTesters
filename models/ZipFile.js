@@ -9,10 +9,10 @@ const Schema = new mongoose.Schema({
   FileCount: Number,
   FileCountJava: Number,
   FileCountPython: Number,
-  Students: [
+  Files: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Student",
+      ref: "File",
     },
   ],
 });
