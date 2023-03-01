@@ -1,0 +1,19 @@
+<?php
+$fn = function($a) {};
+-----
+Block#1
+    Expr_Closure<'{anonymous}#1'>
+        result: Var#1
+    Expr_Assign
+        var: Var#2<$fn>
+        expr: Var#1
+        result: Var#3
+    Terminal_Return
+
+Function '{anonymous}#1': mixed
+Block#1
+    Expr_Param
+        declaredType: mixed
+        name: LITERAL('a')
+        result: Var#1<$a>
+    Terminal_Return
