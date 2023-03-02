@@ -26,6 +26,36 @@ props: id={currentZipFileId}
           updateZipFileHandler={setCurrentZipFileId}
 */
 
+// Can access zip file by id and all is viewable
+function ViewMorePage(props) {
+	const { id, updateRouteHandler, updateZipFileHandler } = props;
+	const [file, setFile] = useState({ Students: [] });
+
+	console.log(id);
+
+	useEffect(async () => {
+		const results = (await getZipFile(id)).data;
+		console.log(results);
+		setFile(results);
+	}, []);
+
+	return (
+		<Grid style={{ padding: "3.5vw" }}>
+			<Grid.Row>
+				<Grid.Column textAlign="right">
+					<Card>
+						<Card.Content>
+							<h1>Here's a card.</h1>
+							<p>{id}</p>
+						</Card.Content>
+					</Card>
+				</Grid.Column>
+			</Grid.Row>
+		</Grid>
+	)
+}
+
+/*
 function ViewMorePage(props) {
 	const { id, updateRouteHandler, updateZipFileHandler } = props;
 	const [file, setFile] = useState({ Students: [] });
@@ -87,12 +117,6 @@ function ViewMorePage(props) {
 										<Card.Meta>
 											Submitted {student.Files.length} files
 										</Card.Meta>
-										{/* <Card.Meta>Submitted 20 files</Card.Meta> */}
-										{/* <Card.Meta>Submitted 20 files</Card.Meta> */}
-										{/* <Card.Description textAlign="center">
-								<Statistic label="detections" value={"4"} />
-								<Statistic label="severity score" value={"9"} />
-							</Card.Description> */}
 									</Card.Content>
 									<Card.Content extra>
 										<Icon color={"blue"} name="user" />
@@ -362,6 +386,6 @@ function ViewMorePage(props) {
 			</Grid.Row>
 		</Grid>
 	);
-}
+} */
 
 export default ViewMorePage;
