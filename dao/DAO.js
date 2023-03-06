@@ -7,7 +7,9 @@ const ZipFile = require("../models/ZipFile.js").Model;
 const File = require("../models/File.js").Model;
 const Error = require("../models/JSError.js").Model;
 const PYError = require("../models/PYError.js").Model;
+const PHPError = require("../models/PHPError.js").Model;
 const ErrorList = require("../models/ErrorTypes.js").ErrorList;
+const PHPErrorList = require("../models/PHPErrorTypes.js").ErrorList;
 // const PYErrorList = require("../models/PYErrorTypes.js").PYErrorList;
 
 exports.getUser = async (username) => {
@@ -81,7 +83,8 @@ exports.addZipFile = async (
   Owner,
   FileCount,
   FileCountJava,
-  FileCountPython
+  FileCountPython,
+  FileCountPhp
 ) => {
   return await ZipFile.create({
     Name,
@@ -90,6 +93,7 @@ exports.addZipFile = async (
     FileCount,
     FileCountJava,
     FileCountPython,
+    FileCountPhp,
   });
 };
 
@@ -150,6 +154,32 @@ exports.addPYError = async (
   return PYerror._id;
 };
 
+exports.addPHPError = async (
+  ErrorType,
+  RuleID,
+  Severity,
+  Message,
+  Line,
+  Column,
+  NodeType,
+  MessageId,
+  EndLine,
+  EndColumn
+) => {
+  const error = await PHPError.create({
+    ErrorType,
+    Severity,
+    Message,
+    Line,
+    Column,
+    NodeType,
+    MessageId,
+    EndLine,
+    EndColumn,
+  });
+  return PHPerror._id;
+};
+
 exports.addFile = async (
   Name,
   ErrorCount,
@@ -160,9 +190,11 @@ exports.addFile = async (
   Source,
   Errors,
   PyErrors,
+  PhpErrors,
   SeverityScore,
   isPyFile,
   isJavaFile,
+  isPhpFile,
   parentZipFileID
 ) => {
   return await File.create({
@@ -175,9 +207,11 @@ exports.addFile = async (
     Source,
     Errors,
     PyErrors,
+    PhpErrors,
     SeverityScore,
     isPyFile,
     isJavaFile,
+    isPhpFile,
     parentZipFileID,
   });
 };
@@ -227,6 +261,7 @@ exports.getZipFile = async (id) => {
       populate: [
         { path: "Errors", model: "Error" },
         { path: "PyErrors", model: "PYError" },
+        { path: "PhpErrors", model: "PHPError" },
       ],
     });
   console.log("hello world");
@@ -254,6 +289,16 @@ exports.getZipFile = async (id) => {
           Message: error.Message,
         };
         zipFile.Files[i].PyErrors[k] = updatedError;
+      });
+    }
+    if (file.PhpErrors) {
+      file.PhpErrors.forEach((error, k) => {
+        const updatedError = {
+          ErrorType: PHPErrorList[error["ErrorType"]],
+          Line: error.LineNumber,
+          Message: error.Message,
+        };
+        zipFile.Files[i].PhpErrors[k] = updatedError;
       });
     }
   });

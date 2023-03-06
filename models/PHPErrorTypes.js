@@ -359,17 +359,17 @@ exports.PHPErrorList[38] = {
 };
 
 
-// exports.convertRuleIDToErrorType = (ErrorID) => {
-// 	if (!ErrorID) {
-// 		return -1;
-// 	}
-// 	for (const [key, value] of Object.entries(exports.ErrorList)) {
-// 		if ("" + value["Name"] == ErrorID.replace("-", " ")) {
-// 			return key;
-// 		}
-// 	}
-// 	return -1;
-// };
+exports.convertRuleIDToErrorType = (ErrorID) => {
+	if (!ErrorID) {
+		return -1;
+	}
+	for (const [key, value] of Object.entries(exports.ErrorList)) {
+		if ("" + value["Name"] == ErrorID.replaceAll("-", " ")) {
+			return key;
+		}
+	}
+	return -1;
+};
 
 exports.ReturnPHPErrorTypeInformation = (ErrorID) => {
 	return exports.PHPErrorList[ErrorID];
