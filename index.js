@@ -23,6 +23,9 @@ const ErrorTypeDetail = require("./models/ErrorTypes.js");
 const PYErrorTypes = require("./models/PYErrorTypes.js").PYErrorList;
 const PYErrorTypeDetail = require("./models/PYErrorTypes.js");
 
+const PHPErrorTypes = require("./models/PHPErrorTypes.js").PHPErrorList;
+const PHPErrorTypeDetail = require("./models/PHPErrorTypes.js");
+
 const app = express();
 const port = process.env.PORT;
 const reactPort = 3000;
@@ -681,9 +684,13 @@ app.post("/upload", async (req, res) => {
       console.log(value);
     });
 
+    // Tracks sum of all file severities in folder
+    var zipSeverity = 0;
+
     //Go tThrough ESlint detected errors
     await Promise.all(
       javaResultArray.map(async (result) => {
+        console.log("Current file path and messages: ");
         console.log(result.at(0).filePath);
         console.log(result.at(0).messages);
         const relativePath = getRelativePath(result.at(0).filePath, false);
@@ -710,14 +717,10 @@ app.post("/upload", async (req, res) => {
             );
           })
         );
-
-        //TODO DELETE THIS FUNCTION!! no need for severity score
-        //gets the severity score of current file
-        //current placeholder of 0 to avoid crashes
-        const fileSeverity = 0;
-        //getSeverityScore(severityScores, -1);
-        //console.log("file Severity is: ");
-        //console.log(fileSeverity);
+        
+        // Sums severityScores array to get total severity of all errors in file and updates zip file sev total
+        const fileSeverity = severityScores.reduce(function (x, y) { return x + y; }, 0);
+        zipSeverity += fileSeverity;
 
         //Stores file on the database
         const fileRecord = await DAO.addFile(
@@ -794,7 +797,7 @@ app.post("/upload", async (req, res) => {
     // }));
 
     //error count, severity score for metrics page - SEVERITY SCORE CHANGE FROM 0 HERE!
-    await DAO.updateZipFile(zipFileRecord._id, parseInt(totalErrors), 1);
+    await DAO.updateZipFile(zipFileRecord._id, parseInt(totalErrors), zipSeverity);
     await DAO.updateZipFilesArray(zipFileRecord._id, fileIDArray);
     fsExtra.emptyDirSync("./extracted");
     res.status(200).json(true);
@@ -1103,6 +1106,16 @@ app.get("/PYErrorTypes", async (req, res) => {
   }
 });
 
+app.get("/PHPErrorTypes", async (req, res) => {
+  if (req.session.username) {
+    res
+      .status(200)
+      .json(PHPErrorTypeDetail.ReturnPHPErrorTypeInformation(req.query.id));
+  } else {
+    res.status(403).json(false);
+  }
+});
+
 app.get("/PYErrorIDs", async (req, res) => {
   if (req.session.username) {
     res.status(200).json(PYErrorTypeDetail.getPYErrorIDs());
@@ -1114,6 +1127,14 @@ app.get("/PYErrorIDs", async (req, res) => {
 app.get("/ErrorTypesNum", async (req, res) => {
   if (req.session.username) {
     res.status(200).json(ErrorTypeDetail.getErrorTypesNum());
+  } else {
+    res.status(403).json(false);
+  }
+});
+
+app.get("/PHPErrorIDs", async (req, res) => {
+  if (req.session.username) {
+    res.status(200).json(PHPErrorTypeDetail.getPHPErrorIDs());
   } else {
     res.status(403).json(false);
   }

@@ -20,6 +20,12 @@ import moment from "moment";
 import { getZipFile } from "../client/API.js";
 import { ChartsPage } from "../components/ChartsPage";
 
+/*
+props: id={currentZipFileId}
+          updateRouteHandler={setCurrentRoute}
+          updateZipFileHandler={setCurrentZipFileId}
+*/
+
 function ViewMorePage(props) {
 	const { id, updateRouteHandler, updateZipFileHandler } = props;
 	const [file, setFile] = useState({ Students: [] });

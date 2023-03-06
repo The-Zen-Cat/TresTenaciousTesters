@@ -1,3 +1,4 @@
+/* eslint-disable security-node/detect-crlf */
 const { PYErrorList } = require("../models/PYErrorTypes.js");
 
 const User = require("../models/User.js").Model;
