@@ -147,7 +147,7 @@ function ViewMorePage(props) {
 				</Grid>
 			),
 		},
-		{ menuItem: "Graphs", render: () => <ChartsPage file={zipfile} />  } // error - reading undefined map
+		{ menuItem: "Graphs", render: () => <ChartsPage zipfile={zipfile} />  } // error - reading undefined map
 	]
 
 	return (

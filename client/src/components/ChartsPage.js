@@ -1,7 +1,7 @@
 import React from "react";
 import { Radar, Pie, Line, Bar, getElementAtEvent } from "react-chartjs-2";
 import GaugeChart from "react-gauge-chart";
-import { Card, List } from "semantic-ui-react";
+import { Card, CardContent, List } from "semantic-ui-react";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -111,26 +111,24 @@ function getLineData(xArray, yArray) {
   };
 }
 
-function getErrors(students) {
+function getErrors(files) {
   var errorList = [];
-  students.map((student) =>
-    student.Files.map((file) => {
-      if (file.Errors) {
-        file.Errors.map((error) => {
-          if (error.ErrorType.Severity !== 0) {
-            errorList.push(error);
-          }
-        });
-      }
-      if (file.PyErrors) {
-        file.PyErrors.map((error) => {
-          if (error.ErrorType.Severity !== 0) {
-            errorList.push(error);
-          }
-        });
-      }
-    })
-  );
+  files.map((file) => {
+    if (file.Errors) {
+      file.Errors.map((error) => {
+        if (error.ErrorType.Severity !== 0) {
+          errorList.push(error);
+        }
+      });
+    }
+    if (file.PyErrors) {
+      file.PyErrors.map((error) => {
+        if (error.ErrorType.Severity !== 0) {
+          errorList.push(error);
+        }
+      });
+    }
+  });
   return errorList;
 }
 
@@ -149,17 +147,17 @@ function getStandardDeviation(array) {
 
 // Used by ViewMorePage.js
 function ChartsPage(props) {
-  // get list of errors from all students in zip - TODO: ALL FILES, NOT STUDENTS
-  const errorList = getErrors(props.file.Students);
+  // get list of errors from all files in zip 
+  const errorList = getErrors(props.zipfile.Files);
 
   // get frequency of all vulnerabilities in zip file - TODO: THIS MIGHT BE GOOD TO KEEP?
   var freqOfVuln = new Array(10).fill(0);
   errorList.forEach((error) => freqOfVuln[error.ErrorType.Severity - 1]++);
 
-  // get frequency of severities for each student - TODO: PROB DON'T KEEP
+  // get frequency of severities for each file - TODO: PROB DON'T KEEP
   var freqOfSev = new Array(10).fill(0);
-  props.file.Students.forEach(
-    (student) => freqOfSev[student.SeverityScore - 1]++
+  props.zipfile.Files.forEach(
+    (file) => freqOfSev[file.SeverityScore - 1]++
   );
 
   // get most popular vulnerabilities
@@ -183,11 +181,12 @@ function ChartsPage(props) {
     <Card.Group>
       <Card>
         <Card.Header>Overall Zip File Severity</Card.Header>
+        <CardContent>FIX GAUGE</CardContent>
         <Card.Content>
           <GaugeChart
             id="gauge-chart1"
             nrOfLevels={9}
-            percent={props.file.SeverityScore / 10}
+            percent={props.zipfile.SeverityScore / 10}
             textColor="#345243"
             needleColor="#8A948F"
             formatTextValue={(value) => value / 10}
@@ -195,23 +194,24 @@ function ChartsPage(props) {
         </Card.Content>
       </Card>
       <Card>
-        <Card.Header>Students with Highest Severity Score</Card.Header>
+        <Card.Header>Files with Highest Severity Score</Card.Header>
         <Card.Content>
           <List>
-            {props.file.Students.sort(
+            {props.zipfile.Files.sort(
               (a, b) => b.SeverityScore - a.SeverityScore
             )
               .slice(0, 5)
-              .map((student) => (
+              .map((file) => (
                 <List.Item>
-                  {student.Name}: {student.SeverityScore.toString()}
+                  {file.Name}: {file.SeverityScore.toString()}
                 </List.Item>
               ))}
           </List>
         </Card.Content>
       </Card>
       <Card>
-        <Card.Header>Severity Scores of All Students</Card.Header>
+        <Card.Header>Severity Scores of All Files</Card.Header>
+        <Card.Content>To Do: Files can have any severity, not just 0-10</Card.Content>
         <Card.Content>
           <Pie data={getPieData(freqOfSev)} />
         </Card.Content>
@@ -229,24 +229,10 @@ function ChartsPage(props) {
         </Card.Content>
       </Card>
       <Card>
-        <Card.Header>Frequency of Severities in All Files</Card.Header>
+        <Card.Header>Vulnerabilities by Language</Card.Header>
         <Card.Content>
+          TODO
           <Radar data={getRadarData(freqOfVuln)} />
-        </Card.Content>
-      </Card>
-      <Card>
-        <Card.Header>Frequency of Severities in All Files</Card.Header>
-        <Card.Content>
-          <Bar data={getBarData(freqOfVuln)} />
-        </Card.Content>
-        <Card.Content>
-          <List>
-            <List.Item>Mean: {getMean(severityList).toFixed(2)}</List.Item>
-            <List.Item>
-              Standard Deviation:{" "}
-              {getStandardDeviation(severityList).toFixed(2)}
-            </List.Item>
-          </List>
         </Card.Content>
       </Card>
     </Card.Group>
@@ -282,6 +268,7 @@ function ZipChartsPage(props) {
     <Card.Group>
       <Card>
         <Card.Header>Average Severity Score of All Zip Files</Card.Header>
+        <CardContent>FIX GAUGE</CardContent>
         <Card.Content>
           <GaugeChart
             id="gauge-chart2"
@@ -310,10 +297,12 @@ function ZipChartsPage(props) {
       </Card>
       <Card>
         <Card.Header>Severity Scores of All Zip Files</Card.Header>
+        <CardContent>TODO: Why doesn't it appear?</CardContent>
         <Pie data={getPieData(freqOfVuln)} />
       </Card>
       <Card>
         <Card.Header>Severity Scores Over Time</Card.Header>
+        <CardContent>Change size to be longer</CardContent>
         <Line data={getLineData(zipDate, zipSev)} />
       </Card>
     </Card.Group>
