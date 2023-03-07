@@ -47,7 +47,8 @@ function getRadarData(dataArray) {
   };
 }
 
-function getPieData(dataArray) {
+// need a set color function which returns n random colors for n entries in map
+function getPieData(dataArray) { // change input to mapOfSeverities
   return {
     labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
     datasets: [
@@ -155,10 +156,23 @@ function ChartsPage(props) {
   errorList.forEach((error) => freqOfVuln[error.ErrorType.Severity - 1]++);
 
   // get frequency of severities for each file - TODO: PROB DON'T KEEP
+  var freqOfSev = new Map();
+  props.zipfile.Files.forEach(
+    (file) => {
+      if (freqOfSev.has(file.SeverityScore)) {
+        freqOfSev.set(file.SeverityScore, freqOfSev.get(file.SeverityScore) + 1)
+      }
+      else {
+        freqOfSev.set(file.SeverityScore, 1)
+      }
+    }
+  )
+
+  /*
   var freqOfSev = new Array(10).fill(0);
   props.zipfile.Files.forEach(
     (file) => freqOfSev[file.SeverityScore - 1]++
-  );
+  );*/
 
   // get most popular vulnerabilities
   var vulns = new Map();
@@ -211,7 +225,7 @@ function ChartsPage(props) {
       </Card>
       <Card>
         <Card.Header>Severity Scores of All Files</Card.Header>
-        <Card.Content>To Do: Files can have any severity, not just 0-10</Card.Content>
+        <Card.Content>To Do: Files can have any severity, not just 0-10; Doesn't appear b/c input is now a map but expects array.</Card.Content>
         <Card.Content>
           <Pie data={getPieData(freqOfSev)} />
         </Card.Content>
@@ -297,7 +311,7 @@ function ZipChartsPage(props) {
       </Card>
       <Card>
         <Card.Header>Severity Scores of All Zip Files</Card.Header>
-        <CardContent>TODO: Why doesn't it appear?</CardContent>
+        <CardContent>TODO: Doesn't appear b/c zero is not an option - need to support variable labels/severities</CardContent>
         <Pie data={getPieData(freqOfVuln)} />
       </Card>
       <Card>
