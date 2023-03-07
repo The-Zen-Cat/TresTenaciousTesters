@@ -14,7 +14,7 @@ import SignUp from "./pages/SignUp";
 import Landing from "./pages/Landing";
 import DownloadReportPage from "./pages/DownloadReportPage";
 //import FederatedOAuth from "./components/FederatedOAuth";
-import { getUser } from "./client/API";
+import { getUser, getZipFile } from "./client/API";
 
 function App() {
   let defaultRoute = "LogIn";
@@ -36,15 +36,17 @@ function App() {
   };
 
   const getCurrentRoute = () => {
-    if (userObject && (currentRoute == "LogIn" || currentRoute == "SignUp")) {
+    if (userObject && (currentRoute === "LogIn" || currentRoute === "SignUp")) {
       setCurrentRoute("main");
     } else if (
       !userObject &&
-      currentRoute != "LogIn" &&
-      currentRoute != "SignUp"
+      currentRoute !== "LogIn" &&
+      currentRoute !== "SignUp"
     ) {
       setCurrentRoute("LogIn");
     }
+
+    console.log(currentZipFileId);
 
     if (currentZipFileId !== "undefined") {
       return (

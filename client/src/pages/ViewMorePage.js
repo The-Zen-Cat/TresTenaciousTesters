@@ -1,37 +1,37 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
 	Grid,
 	Card,
 	Modal,
-	Form,
 	List,
 	Button,
 	Image,
 	Header,
 	Input,
-	Segment,
 	Statistic,
-	Dropdown,
 	Icon,
 	Tab,
 } from "semantic-ui-react";
-import moment from "moment";
 import { getZipFile } from "../client/API.js";
 import { ChartsPage } from "../components/ChartsPage";
 
-/*
-props: id={currentZipFileId}
-          updateRouteHandler={setCurrentRoute}
-          updateZipFileHandler={setCurrentZipFileId}
-*/
-
 function ViewMorePage(props) {
 	const { id, updateRouteHandler, updateZipFileHandler } = props;
-	const [file, setFile] = useState({ Students: [] });
+	const [zipfile, setZipFile] = useState({ Files: [] });
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState([]);
-	const [studentNameFilter, setStudentNameFilter] = useState("");
+	const [fileNameFilter, setFileNameFilter] = useState("");
+
+	console.log(id);
+
+	useEffect(() => {
+		async function fetchZipFileData() {
+		  const response = (await getZipFile(id)).data; 
+		  console.log(response);
+		  setZipFile(response);
+		}
+		fetchZipFileData();
+	}, [id]); 
 
 	function getColor(value) {
 		//value from 0 to 1
@@ -40,42 +40,36 @@ function ViewMorePage(props) {
 		return ["hsl(", hue, ",100%,50%)"].join("");
 	}
 
-	useEffect(async () => {
-		const results = (await getZipFile(id)).data;
-		setFile(results);
-	}, []);
-
-	const getStudents = () => {
-		let filteredStudents = [...file.Students];
-		if (studentNameFilter !== "") {
-			filteredStudents = filteredStudents.filter((student) =>
-				student.Name.startsWith(studentNameFilter)
+	const getFiles = () => {
+		let filteredFiles = [...zipfile.Files];
+		if (fileNameFilter !== "") {
+			filteredFiles = filteredFiles.filter((file) =>
+				file.Name.startsWith(fileNameFilter)
 			);
 		}
-		return filteredStudents;
+		return filteredFiles;
 	};
-
 
 	const panes = [
 		{
-			menuItem: "Students",
+			menuItem: "Files",
 			render: () => (
 				<Grid>
 					<Grid.Row>
-					<Grid.Column style={{ width: "80%" }}>
-						<Input
-							style={{ width: "100%" }}
-							placeholder="Search for student"
-							onChange={(e) => setStudentNameFilter(e.target.value)}
-						/>
-					</Grid.Column>
-					<Grid.Column>
-						<Button icon="sort"></Button>
-					</Grid.Column>
+						<Grid.Column style={{ width: "80%" }}>
+							<Input
+								style={{ width: "100%" }}
+								placeholder="Search for File"
+								onChange={(e) => setFileNameFilter(e.target.value)}
+							/>
+						</Grid.Column>
+						<Grid.Column>
+							<Button icon="sort"></Button>
+						</Grid.Column>
 					</Grid.Row>
 					<Grid.Row>
 						<Card.Group>
-							{getStudents().map((student) => (
+							{getFiles().map((file) => (
 								<Card>
 									<Card.Content>
 										<Image
@@ -83,77 +77,58 @@ function ViewMorePage(props) {
 											size="mini"
 											src="https://i.ibb.co/vxd7Rwc/abc-123-programmer-software-developer-generated.jpg"
 										/>
-										<Card.Header>{student.Name}</Card.Header>
-										<Card.Meta>
-											Submitted {student.Files.length} files
-										</Card.Meta>
-										{/* <Card.Meta>Submitted 20 files</Card.Meta> */}
-										{/* <Card.Meta>Submitted 20 files</Card.Meta> */}
-										{/* <Card.Description textAlign="center">
-								<Statistic label="detections" value={"4"} />
-								<Statistic label="severity score" value={"9"} />
-							</Card.Description> */}
+										<Card.Header>{file.Name}</Card.Header>
 									</Card.Content>
 									<Card.Content extra>
 										<Icon color={"blue"} name="user" />
 										<span style={{ color: "blue" }}>
-											{student.Files.reduce(
-												(prev, currFile) =>
-													prev + currFile.ErrorCount,
-												0
-											)}{" "}
+											{file.ErrorCount}{" "}
 											Detections
 										</span>
 									</Card.Content>
 									<Card.Content extra>
 										<Icon
 											style={{
-												color: getColor(student.SeverityScore),
+												color: getColor(file.SeverityScore),
 											}}
 											name="exclamation triangle"
 										/>
 										<span style={{ color: "black" }}>
-											{student.SeverityScore} Severity Score
+											{file.SeverityScore} Severity Score
 										</span>
 									</Card.Content>
 									<Card.Content extra>
 										<div className="ui two buttons">
-											{student.Files.reduce(
-												(prev, currFile) =>
-													prev + currFile.ErrorCount,
-												0
-											) !== 0 ? (
+											{file.ErrorCount !== 0 ? (
 												<Button
 													basic
 													color="primary"
 													onClick={() => {
 														var allErrors = [];
-														student.Files.forEach(
-															(currFile) => {
-																if (currFile.Errors) {
-																	currFile.Errors.forEach(
-																		(error) => {
-																			allErrors.push({
-																				data: error,
-																				fileName: currFile.Name,
-																				type: "JS"
-																			});
-																		}
-																	);
+														console.log(file.Errors);
+														console.log(file.PyErrors);
+														if (file.Errors) {
+															file.Errors.forEach(
+																(error) => {
+																	allErrors.push({
+																		data: error,
+																		fileName: file.Name,
+																		type: "JS"
+																	})
 																}
-																if (currFile.PyErrors) {
-																	currFile.PyErrors.forEach(
-																		(error) => {
-																			allErrors.push({
-																				data: error,
-																				fileName: currFile.Name,
-																				type: "PY"
-																			});
-																		}
-																	);
+															);
+														}
+														if (file.PyErrors) {
+															file.PyErrors.forEach(
+																(error) => {
+																	allErrors.push({
+																		data: error,
+																		fileName: file.Name,
+																		type: "PY"
+																	})
 																}
-															}
-														);
+															);
+														}
 														setErrors(allErrors);
 														setOpen(true);
 													}}
@@ -172,17 +147,8 @@ function ViewMorePage(props) {
 				</Grid>
 			),
 		},
-		{ menuItem: "Graphs", render: () => <ChartsPage file={file} /> },
-	];
-
-	const getDate = (obj) => {
-		obj = obj.substring(0, obj.indexOf("T"));
-		return (
-			obj.substring(obj.indexOf("-") + 1, obj.length) +
-			"-" +
-			obj.substring(0, obj.indexOf("-"))
-		);
-	};
+		{ menuItem: "Graphs", render: () => <ChartsPage zipfile={zipfile} />  } // error - reading undefined map
+	]
 
 	return (
 		<Grid style={{ padding: "3.5vw" }}>
@@ -203,9 +169,9 @@ function ViewMorePage(props) {
 				<Grid columns={2} style={{ paddingRight: "15%" }}>
 					<Grid.Column>
 						<Header as="h1">
-							{file.Name}
+							{zipfile.Name}
 							<Header.Subheader>
-								Ran on {file.Date}
+								Ran on {zipfile.Date}
 							</Header.Subheader>
 						</Header>
 					</Grid.Column>
@@ -218,7 +184,7 @@ function ViewMorePage(props) {
 							<Card.Description textAlign="center">
 								<Statistic
 									label="number of files"
-									value={file.FileCount}
+									value={zipfile.FileCount}
 								/>
 							</Card.Description>
 						</Card.Content>
@@ -228,7 +194,7 @@ function ViewMorePage(props) {
 							<Card.Description textAlign="center">
 								<Statistic
 									label="number of detections"
-									value={file.ErrorCount}
+									value={zipfile.ErrorCount}
 								/>
 							</Card.Description>
 						</Card.Content>
@@ -238,7 +204,7 @@ function ViewMorePage(props) {
 							<Card.Description textAlign="center">
 								<Statistic
 									label="Severity Score"
-									value={file.SeverityScore}
+									value={zipfile.SeverityScore}
 								/>
 							</Card.Description>
 						</Card.Content>
@@ -361,7 +327,8 @@ function ViewMorePage(props) {
 				</Modal>
 			</Grid.Row>
 		</Grid>
-	);
+		
+	)
 }
 
 export default ViewMorePage;
