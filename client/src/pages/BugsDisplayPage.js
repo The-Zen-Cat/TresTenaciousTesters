@@ -13,7 +13,7 @@ import {
 
 //TO-DO redesign this
 
-import { getErrorTypes, getErrorTypesNum, getErrorTypesPY, getPYErrorIDs } from "../client/API.js";
+import { getErrorTypes, getErrorTypesNum, getErrorTypesPY, getPYErrorIDs, getErrorTypesPHP, getPHPErrorIDs } from "../client/API.js";
 
 function BugsPage() {
 	const [nameArrayJS, setNameArrayJS] = useState([]);
@@ -30,6 +30,12 @@ function BugsPage() {
 
 	const pyIndexes = [101,102,103,104,105,106,107,108,109,110,111,112,113,201,202,324,501,501,503,504,505,506,507,508,509,601,602,603,604,605,606,607,608,609,610,611,612,701,702,703]
 
+	const [nameArrayPHP, setNameArrayPHP] = useState([]);
+	const [severityArrayPHP, setSeverityArrayPHP] = useState([]);
+	const [descriptionArrayPHP, setDescriptionArrayPHP] = useState([]);
+	const [arrayPHP, setArrayPHP] = useState([]);
+
+	const phpIndexes = [-1,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024]
 
 
 	function ArrayAdderJS(name, severity, description) {
@@ -52,6 +58,16 @@ function BugsPage() {
 		setGroupArrayPY((groupArrayPY) => [...groupArrayPY, group]);
 	}
 
+	function ArrayAdderPHP(name, severity, description) {
+		// Delete this later
+		setNameArrayPHP((nameArrayPHP) => [...nameArrayPHP, name]);
+		setSeverityArrayPHP((severityArrayPHP) => [...severityArrayPHP, severity]);
+		setDescriptionArrayPHP((descriptionArrayPHP) => [
+			...descriptionArrayPHP,
+			description,
+		]);
+	}
+
 	useEffect(async () => {
 		var counter = await getErrorTypesNum();
 		console.log(counter.data);
@@ -72,7 +88,18 @@ function BugsPage() {
 			ArrayAdderPY(resultsPy.Name, resultsPy.Severity, resultsPy.Description, resultsPy.CWE, resultsPy.MoreInfo, resultsPy.Group);
 			console.log(resultsPy.Name);
 		}
-		
+
+		var phpCounter = await getPHPErrorIDs();
+		console.log(phpCounter.data);
+		let arrayPHP = [];
+		for (let j = 0; j < phpCounter.data; j++) {
+			const resultsPHP = (await getErrorTypesPHP(j)).data;
+			ArrayAdderPHP(resultsPHP.Name, resultsPHP.Severity, resultsPHP.Description);
+			console.log(resultsPHP.Name);
+						arrayPHP.push({ CWE: resultsPHP.CWE, MoreInfo: resultsPHP.MoreInfo });
+		}
+		setArrayPHP(arrayPHP);
+		console.log(phpCounter.data);
 	}, []);
 
 	// useEffect(async () => {
@@ -127,6 +154,25 @@ function BugsPage() {
 		);
 	};
 	
+	const getTableRowsPHP = () => {
+		return (
+			<div>
+				{Array.from({ length: 39 }).map((_, index) => (
+					<tr>
+						<Table bordered hover>
+							<td>
+								<tr><b>  {nameArrayPHP[index]} </b></tr>
+								<tr>Severity Level: {severityArrayPHP[index]}</tr>
+								{arrayPHP[index] && arrayPHP[index].CWE && <tr>CWE: <a href={arrayPHP[index].CWE} target="_blank" rel="noopener noreferrer">Link</a></tr>}
+								{arrayPHP[index] && arrayPHP[index].MoreInfo && <tr>More Info: <a href={arrayPHP[index].MoreInfo} target="_blank" rel="noopener noreferrer">Link</a></tr>}
+							</td>
+						</Table>
+						<td>Description: {descriptionArrayPHP[index]}</td>
+					</tr>
+				))}
+			</div>
+		);
+	};
 
 	return (
 		<Grid style={{ padding: "1.5vw" }}>
@@ -238,6 +284,18 @@ function BugsPage() {
 						</tr>
 					</thead>
 					<tbody>{getTableRowsJavaScript()}</tbody>
+	
+					<br></br>
+
+				</Table>
+
+			<Table striped bordered hover>
+					<thead>
+						<tr>
+							<th>PHP Security Issue Types</th>
+						</tr>
+					</thead>
+					<tbody>{getTableRowsPHP()}</tbody>
 	
 					<br></br>
 
