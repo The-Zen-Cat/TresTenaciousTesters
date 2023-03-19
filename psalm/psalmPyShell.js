@@ -1,8 +1,8 @@
-let { PythonShell } = require("python-shell");
+let { PythonShell } = require("psalm-shell");
 
 exports.runPsalm = async (dirToPyFiles, isJson) => {
   let optionsJSON = {
-    mode: "json",
+    mode: "text",
     //pythonPath: 'path/to/python',
     pythonOptions: ["-u"], // get print results in real-time
     scriptPath: __dirname,
