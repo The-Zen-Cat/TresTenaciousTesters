@@ -1,4 +1,4 @@
-let { PythonShell } = require("psalm-shell");
+let { PythonShell } = require("python-shell");
 
 exports.runPsalm = async (dirToPyFiles, isJson) => {
   let optionsJSON = {
