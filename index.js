@@ -778,6 +778,11 @@ app.post("/upload", async (req, res) => {
     console.log("THE PHP RESULTS: " + phpResults);
     console.log(phpResults);
 
+    console.log("let's try printing the php map")
+    for(let [key, value] of phpResults) {
+      console.log(key + " = " + value);
+    }
+
     const phpErrorsMap = new Map();
     let phpFileErrors = [];
     const phpErrorsMap2 = await Promise.all(
