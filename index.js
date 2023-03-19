@@ -393,7 +393,7 @@ app.post("/upload", async (req, res) => {
     }
     console.log(pythonResults);
     console.log(javaResults);
-    console.log(phpResults);
+    //console.log(phpResults);
     console.log("javaResults size: ");
     console.log(javaResults.size);
     console.log("phpResults size: ");
