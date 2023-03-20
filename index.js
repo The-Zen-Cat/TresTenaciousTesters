@@ -717,9 +717,11 @@ app.post("/upload", async (req, res) => {
             );
           })
         );
-        
+
         // Sums severityScores array to get total severity of all errors in file and updates zip file sev total
-        const fileSeverity = severityScores.reduce(function (x, y) { return x + y; }, 0);
+        const fileSeverity = severityScores.reduce(function (x, y) {
+          return x + y;
+        }, 0);
         zipSeverity += fileSeverity;
 
         //Stores file on the database
@@ -797,7 +799,11 @@ app.post("/upload", async (req, res) => {
     // }));
 
     //error count, severity score for metrics page - SEVERITY SCORE CHANGE FROM 0 HERE!
-    await DAO.updateZipFile(zipFileRecord._id, parseInt(totalErrors), zipSeverity);
+    await DAO.updateZipFile(
+      zipFileRecord._id,
+      parseInt(totalErrors),
+      zipSeverity
+    );
     await DAO.updateZipFilesArray(zipFileRecord._id, fileIDArray);
     fsExtra.emptyDirSync("./extracted");
     res.status(200).json(true);
@@ -948,6 +954,10 @@ app.post("/generateReport", async (req, res) => {
           error.frequency / numPYErrors +
           "\n";
       });
+    }
+    if (numPYErrors == 0 && numJSErrors == 0) {
+      response +=
+        "There are no errors to report within the selected files!  This is most certainly the result of excellent teaching!\n";
     }
     res.json(response);
   } else {
