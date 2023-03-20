@@ -291,11 +291,18 @@ exports.deleteZipFolder = async (zipFolderID) => {
       model: "File",
       populate: { path: "Errors", model: "Error" },
     });
-
+  console.log(zipFile);
   zipFile.Files.forEach(async (file, j) => {
-    file.Errors.forEach(async (error, k) => {
-      await Error.deleteOne({ id: error._id }).exec();
-    });
+    if (file.isJavaFile == true) {
+      file.Errors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+    }
+    if (file.isPyFile == true) {
+      file.PyErrors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+    }
     await File.deleteOne({ id: file._id }).exec();
   });
 
