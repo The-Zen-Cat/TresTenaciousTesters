@@ -345,6 +345,7 @@ app.post("/upload", async (req, res) => {
           );
         } else if (hasPyFiles(fileNamesInZipFolder.at(i))) {
           //console.log("analyzing py file... ");
+          console.log("adding python files")
           pythonResults.set(
             fileNamesInZipFolder.at(i),
             await Bandit.runBandit(
@@ -443,6 +444,9 @@ app.post("/upload", async (req, res) => {
       results.push(tempObj.results);
       metrics.push(tempObj.metrics);
     });
+
+    console.log("Python Results:")
+    console.log(pythonResults)
 
     console.log("metrics");
     console.log(metrics);
@@ -560,6 +564,10 @@ app.post("/upload", async (req, res) => {
         const fileSeverity = severityScores.reduce(function (x, y) {
           return x + y;
         }, 0);
+
+        console.log("zip file severity:")
+        console.log(fileSeverity)
+
         var path1 = require("path");
         const relativePath = path1.basename(key);
 
@@ -583,7 +591,7 @@ app.post("/upload", async (req, res) => {
       }
     }
     console.log("relative path:");
-    //console.log(relativePath);
+    console.log(relativePath);
 
     //const currentStudentID = getStudentIDFromRelPath(
     //  relativePath,
