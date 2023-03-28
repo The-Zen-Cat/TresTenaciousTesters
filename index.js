@@ -277,11 +277,21 @@ app.post("/upload", async (req, res) => {
     //we will first unzip an inner zip folders (supports ONE LEVEL of inner zips)
     //this will place all inner zip file contents in the root ./extracted folder for processing
     //TODO: maybe delete this functionality unless needed by professor
+
     fileNamesInZipFolder.forEach((file) => {
       if (path.extname(file) == ".zip") {
+        changed = 1;
         const innerZipFileExtractor = new AdmZip("./extracted/" + file);
         innerZipFileExtractor.extractAllTo("./extracted/", true);
       }
+    });
+
+    fileNamesInZipFolder.forEach((file) => {
+      //this is now handled above in while loop to do infinite number of nested zip folders
+      //if (path.extname(file) == ".zip") {
+      //  const innerZipFileExtractor = new AdmZip("./extracted/" + file);
+      //  innerZipFileExtractor.extractAllTo("./extracted/", true);
+      //}
 
       //fileNamesInZipFolder.forEach((file) => {
       // if (file.indexOf("_") == -1) {
@@ -336,7 +346,10 @@ app.post("/upload", async (req, res) => {
     var totalErrors = 0;
     //console.log(fileNamesInZipFolder);
     //process each file in zip folder with bandit or eslint (depending on file type)
+    var zipFoldersPresent = 0;
+    var atLeastOneValidFile = 0;
     async function analyzeFiles() {
+      var nonCompliantFiles = 0;
       console.log("inside analyze Files");
       console.log(fileNamesInZipFolder.length);
       console.log(fileNamesInZipFolder);
@@ -344,6 +357,7 @@ app.post("/upload", async (req, res) => {
         // If two files in the zip folder have the same name, the second one will not be added
         // Each file in a canvas download has a unique name, so this case is not accounted for
         if (hasJSFiles(fileNamesInZipFolder.at(i))) {
+          atLeastOneValidFile = 1;
           console.log("adding java files!");
           javaResults.set(
             fileNamesInZipFolder.at(i),
@@ -352,6 +366,7 @@ app.post("/upload", async (req, res) => {
             ])
           );
         } else if (hasPyFiles(fileNamesInZipFolder.at(i))) {
+          atLeastOneValidFile = 1;
           //console.log("analyzing py file... ");
           pythonResults.set(
             fileNamesInZipFolder.at(i),
@@ -361,10 +376,19 @@ app.post("/upload", async (req, res) => {
             )
           );
         } else {
-          console.log("we're in else somehow!");
-          //for now, will not throw error, but rather process the valid files present
+          if (
+            fileNamesInZipFolder
+              .at(i)
+              .substring(fileNamesInZipFolder.at(i).length - 4) == ".zip"
+          ) {
+            zipFoldersPresent = 1;
+            continue;
+          } else {
+            nonCompliantFiles = -1;
+          }
+          console.log("noncompliant files or zip present!");
 
-          return -1;
+          //for now, will not throw error, but rather process the valid files present
         }
         //console.log("super tests: ");
         //console.log("eslint: " + result);
@@ -373,15 +397,27 @@ app.post("/upload", async (req, res) => {
         //console.log(result.at(0).messages.at(0).ruleId);
         //console.log("bandit: " + mytest);
       }
+
+      return nonCompliantFiles;
     }
     //console.log("TEST TEST");
     var validFiles = await analyzeFiles(); // will have to amend this if trying to allow inner folder (would return -1 with inner folder)
-    if (validFiles == -1) {
+    if (atLeastOneValidFile == 0) {
+      console.log("at at least one valid file error");
       res
-        .status(400)
-        .json("Error: Zip Files contains non java or python files");
+        .status(200)
+        .send(
+          "ERROR: Zip Files contains NO .js or .py files - please check that you are not using more than 1 level of nested zip folders.  No results were logged in the database."
+        );
       return;
     }
+
+    //if (validFiles == -1) {
+    //  res
+    //    .status(400)
+    //    .json("Error: Zip Files contains non java or python files");
+    //  return;
+    //}
     console.log(pythonResults);
     console.log(javaResults);
     console.log("javaResults size: ");
@@ -814,7 +850,37 @@ app.post("/upload", async (req, res) => {
     );
     await DAO.updateZipFilesArray(zipFileRecord._id, fileIDArray);
     fsExtra.emptyDirSync("./extracted");
-    res.status(200).json(true);
+    if (atLeastOneValidFile == 0) {
+      res
+        .status(200)
+        .send(
+          "WARNING: There were no .js or .py files detected in the uploaded .zip folder.  The application will check ONE (1) level deep for nested zip folders, but any beyond this will not be detected properly.  Please check your file to ensure compliance with this format."
+        );
+    } else if (validFiles == -1 && zipFoldersPresent == 1) {
+      res
+        .status(200)
+        .send(
+          "WARNING: There were some files present in the uploaded .zip file that are not .js or .py, but any valid files were processed.  WARNING: nested zip folder(s) detected!  This application will process ONE (1) layer of nested zip files, but NOT beyond that.  Please ensure your uploaded folder structure is compliant as any further nested files will be ignored."
+        );
+    } else if (validFiles == -1 && zipFoldersPresent == 0) {
+      res
+        .status(200)
+        .send(
+          "WARNING: There were some files present in the uploaded .zip file that are not .js or .py, but any valid files were processed"
+        );
+    } else if (validFiles == 0 && zipFoldersPresent == 1) {
+      res
+        .status(200)
+        .send(
+          "WARNING: nested zip folder(s) detected!  This application will process ONE (1) layer of nexted zip files, but NOT beyond that.  Please ensure your uploaded folder structure is compliant as any further nested files will be ignored."
+        );
+    } else {
+      res
+        .status(200)
+        .send(
+          "All files processed were of type .js or .py!  Upload was successful!"
+        );
+    }
   });
 });
 

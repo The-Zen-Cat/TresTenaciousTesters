@@ -54,6 +54,16 @@ function MainPage(props) {
 
   const filterData = [
     {
+      key: "0",
+      text: "No Score Filter",
+      value: "0",
+      label: {
+        color: "green",
+        empty: true,
+        circular: true,
+      },
+    },
+    {
       key: "1",
       text: "1",
       value: "1",
@@ -201,6 +211,8 @@ function MainPage(props) {
   };
 
   const getFiles = () => {
+    console.log("FILES:");
+    console.log(files);
     let filteredFiles = [...files];
     if (filenameFilter !== "") {
       filteredFiles = files.filter((file) =>
@@ -223,7 +235,9 @@ function MainPage(props) {
         new Date(file.date) >= dateFilter[0] &&
         new Date(file.date) <= dateFilter[1]
     );
+    console.log(filteredFiles);
 
+    console.log("FILTERED FILES:");
     return filteredFiles;
   };
 
@@ -232,8 +246,9 @@ function MainPage(props) {
 
     return (
       <Card.Group>
-        {getFiles().map((file) => (
+        {getFiles().map((file, index) => (
           <Card
+            key={index}
             style={{
               backgroundColor: `${getColor(file.SeverityScore)}`,
             }}
@@ -263,7 +278,7 @@ function MainPage(props) {
                 <Button
                   basic
                   color="red"
-                  onClick={() => setConfirmDeleteOpen(true)}
+                  onClick={() => deleteZipFile(file.id)}
                 >
                   <Icon name="trash" />
                   delete
