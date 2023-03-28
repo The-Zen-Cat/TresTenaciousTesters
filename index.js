@@ -344,7 +344,7 @@ app.post("/upload", async (req, res) => {
             ])
           );
         } else if (hasPyFiles(fileNamesInZipFolder.at(i))) {
-          //console.log("analyzing py file... ");
+          console.log("analyzing py file... ");
           pythonResults.set(
             fileNamesInZipFolder.at(i),
             await Bandit.runBandit(
@@ -443,6 +443,9 @@ app.post("/upload", async (req, res) => {
       results.push(tempObj.results);
       metrics.push(tempObj.metrics);
     });
+
+    console.log("python results:")
+    console.log(pythonResults)
 
     console.log("metrics");
     console.log(metrics);
@@ -556,7 +559,12 @@ app.post("/upload", async (req, res) => {
         //
         //console.log();
         //TODO: redo get severity score function
-        const fileSeverity = getSeverityScore(severityScores, -1);
+        const fileSeverity = severityScores.reduce(function (x, y) {
+          return x + y;
+        }, 0);
+
+        console.log("file severity: ")
+        console.log(fileSeverity)
         var path1 = require("path");
         const relativePath = path1.basename(key);
 
