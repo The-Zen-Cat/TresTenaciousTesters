@@ -538,12 +538,14 @@ app.post("/upload", async (req, res) => {
       })
     );
     console.log("MADE IT TO HERE!");
+    // Tracks sum of all file severities in folder
+    var zipSeverity = 0;
     console.log(fileErrorsMap.size);
     if (fileErrorsMap.size > 0) {
       //connect errors to fileRecord
+      
       for (let [key, value] of fileErrorsMap.entries()) {
         //key = filename ; val = array of mongoose schema errors and numerical pyErrorid for the coresponding file
-
         const severityScores = [];
         const PYerrors = [];
         await value.forEach((element) => {
@@ -556,7 +558,14 @@ app.post("/upload", async (req, res) => {
         //
         //console.log();
         //TODO: redo get severity score function
-        const fileSeverity = getSeverityScore(severityScores, -1);
+        console.log("Severity Scores Map:")
+        console.log(severityScores)
+        const fileSeverity = severityScores.reduce(function (x, y) {
+          return x + y;
+        }, 0);
+        zipSeverity += fileSeverity
+        console.log("file severity:")
+        console.log(fileSeverity)
         var path1 = require("path");
         const relativePath = path1.basename(key);
 
@@ -683,9 +692,6 @@ app.post("/upload", async (req, res) => {
       javaResultArray.push(value);
       console.log(value);
     });
-
-    // Tracks sum of all file severities in folder
-    var zipSeverity = 0;
 
     //Go tThrough ESlint detected errors
     await Promise.all(
