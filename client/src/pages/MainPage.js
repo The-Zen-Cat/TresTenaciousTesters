@@ -157,6 +157,7 @@ function MainPage(props) {
 
   const deleteZipFile = (id) => {
     setConfirmDeleteOpen(false);
+    console.log("id number for deletezipfile: " + id);
     deleteZipFolder(id);
     //setFiles(files.filter((file) => file.id !== id));
     updatenum++;
@@ -227,7 +228,8 @@ function MainPage(props) {
   };
 
   const getStudentFilesCards = () => {
-    files.forEach((f) => console.log(f.id));
+    files.forEach((f) => console.log(f.id + f.name));
+
     return (
       <Card.Group>
         {getFiles().map((file) => (
@@ -270,7 +272,17 @@ function MainPage(props) {
                   content="Are you sure you want to delete this zip folder?"
                   open={confirmDeleteOpen}
                   onCancel={() => setConfirmDeleteOpen(false)}
-                  onConfirm={() => deleteZipFile(file.id)}
+                  onConfirm={() => {
+                    console.log(
+                      "file itself: " +
+                        file +
+                        "onconfirm: fileid: " +
+                        file.id +
+                        " file name: " +
+                        file.name
+                    );
+                    deleteZipFile(file.id);
+                  }}
                 />
               </div>
             </Card.Content>

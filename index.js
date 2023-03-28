@@ -191,8 +191,16 @@ function median(values) {
   return (values[half - 1] + values[half]) / 2.0;
 }
 app.delete("/deleteZipFolder", async (req, res) => {
+  console.log(
+    "in delete zip in index.js: " +
+      req.query.id +
+      " that's req.query.id - this is req: " +
+      req
+  );
+  //console.log(req);
   if (req.session.username) {
     if ((await DAO.getZipFile(req.query.id)).Owner === req.session.username) {
+      console.log("actually deleting this zip file!");
       await DAO.deleteZipFolder(req.query.id);
       res.status(200).json(true);
     } else {
