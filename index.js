@@ -543,10 +543,10 @@ app.post("/upload", async (req, res) => {
     console.log(fileErrorsMap.size);
     if (fileErrorsMap.size > 0) {
       //connect errors to fileRecord
-      const severityScores = [];
+      
       for (let [key, value] of fileErrorsMap.entries()) {
         //key = filename ; val = array of mongoose schema errors and numerical pyErrorid for the coresponding file
-
+        const severityScores = [];
         const PYerrors = [];
         await value.forEach((element) => {
           console.log(element.id);
