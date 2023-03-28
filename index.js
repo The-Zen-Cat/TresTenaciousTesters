@@ -556,7 +556,10 @@ app.post("/upload", async (req, res) => {
         //
         //console.log();
         //TODO: redo get severity score function
-        const fileSeverity = getSeverityScore(severityScores, -1);
+        //const fileSeverity = getSeverityScore(severityScores, -1);
+        const fileSeverity = severityScores.reduce(function (x, y) {
+          return x + y;
+        }, 0);
         var path1 = require("path");
         const relativePath = path1.basename(key);
 
