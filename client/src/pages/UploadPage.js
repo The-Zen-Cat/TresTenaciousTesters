@@ -17,6 +17,7 @@ function UploadPage() {
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
   const [status, setStatus] = useState("");
+  const [result, setResult] = useState("");
 
   const saveFile = (e) => {
     setFile(e.target.files[0]);
@@ -30,8 +31,11 @@ function UploadPage() {
     formData.append("fileName", fileName);
     try {
       const res = await upload(formData);
+      console.log("upload data response:");
+      console.log(res);
       if (res.data) {
         setStatus("success");
+        setResult(res.data);
       } else {
         setStatus("failure");
       }
@@ -75,12 +79,15 @@ function UploadPage() {
         )}
         {status === "success" && (
           <Message positive>
-            <p>Upload successful!</p>
+            <p>{result}</p>
           </Message>
         )}
         {status === "failure" && (
           <Message negative>
-            <p>Upload failed. Please retry.</p>
+            <p>
+              There was an upload error. This could be due to a server issue or
+              internet connectivity issues. Please try again.
+            </p>
           </Message>
         )}
       </Grid.Row>
