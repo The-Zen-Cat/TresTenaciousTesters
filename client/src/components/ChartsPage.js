@@ -47,41 +47,38 @@ function getRadarData(dataArray) {
   };
 }
 
-// need a set color function which returns n random colors for n entries in map
-function getPieData(dataArray) { // change input to mapOfSeverities
+// Used 99 as the min because that was the smallest value originally in hardcoded colors
+// Returns a string "rgba(num1, num2, num3, " leaving last entry to be filled in as .3 (background) or 1 (border)
+function getRandomColor() {
+  var num1 = Math.random() * (255 - 99) + 99;
+  var num2 = Math.random() * (255 - 99) + 99;
+  var num3 = Math.random() * (255 - 99) + 99;
+  return "rgba(" + num1 + ", " + num2 + ", " + num3 + ", "
+}
+
+function getPieData(sevFreqMap) {
+  var sevScores = []
+  var frequencies = []
+  var backColor = []
+  var bordColor = []
+  for (const [sevScore, freq] of sevFreqMap) {
+    sevScores.push(sevScore.toString())
+    frequencies.push(freq)
+    backColor.push(getRandomColor() + "0.3)")
+    bordColor.push(getRandomColor() + "1)")
+  }
+  
   return {
-    labels: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+    labels: sevScores,
     datasets: [
       {
         label: "data",
-        data: dataArray,
-        backgroundColor: [
-          "rgba(99, 255, 195, 0.3)",
-          "rgba(99, 255, 133, 0.3)",
-          "rgba(131, 255, 99, 0.3)",
-          "rgba(162, 245, 39, 0.3)",
-          "rgba(215, 255, 99, 0.3)",
-          "rgba(247, 255, 99, 0.3)",
-          "rgba(255, 214, 99, 0.3)",
-          "rgba(255, 185, 99, 0.3)",
-          "rgba(255, 149, 99, 0.3)",
-          "rgba(255, 99, 99, 0.3)",
-        ],
-        borderColor: [
-          "rgba(99, 255, 195, 1)",
-          "rgba(99, 255, 133, 1)",
-          "rgba(131, 255, 99, 1)",
-          "rgba(162, 245, 39, 1)",
-          "rgba(215, 255, 99, 1)",
-          "rgba(247, 255, 99, 1)",
-          "rgba(255, 214, 99, 1)",
-          "rgba(255, 185, 99, 1)",
-          "rgba(255, 149, 99, 1)",
-          "rgba(255, 99, 99, 1)",
-        ],
-        borderWidth: 1,
-      },
-    ],
+        data: frequencies,
+        backgroundColor: backColor,
+        borderColor: bordColor,
+        borderWidth: 1
+      }
+    ]
   };
 }
 
@@ -146,7 +143,7 @@ function getStandardDeviation(array) {
   );
 }
 
-// Used by ViewMorePage.js
+//=============== Used by ViewMorePage.js =================//
 function ChartsPage(props) {
   // get list of errors from all files in zip 
   const errorList = getErrors(props.zipfile.Files);
@@ -155,7 +152,7 @@ function ChartsPage(props) {
   var freqOfVuln = new Array(10).fill(0);
   errorList.forEach((error) => freqOfVuln[error.ErrorType.Severity - 1]++);
 
-  // get frequency of severities for each file - TODO: PROB DON'T KEEP
+  // get frequency of severities for each file
   var freqOfSev = new Map();
   props.zipfile.Files.forEach(
     (file) => {
@@ -167,12 +164,6 @@ function ChartsPage(props) {
       }
     }
   )
-
-  /*
-  var freqOfSev = new Array(10).fill(0);
-  props.zipfile.Files.forEach(
-    (file) => freqOfSev[file.SeverityScore - 1]++
-  );*/
 
   // get most popular vulnerabilities
   var vulns = new Map();
@@ -186,24 +177,22 @@ function ChartsPage(props) {
   });
   const sortedVulns = new Map([...vulns.entries()].sort((a, b) => b[1] - a[1]));
 
-  // get array of error severity scores
-  var severityList = [];
-  errorList.forEach((error) => severityList.push(error.ErrorType.Severity));
-  console.log(severityList);
-
+  /*
+  The gauge is a range from 0 to 20. This is arbitrary but will probably be good for most files. If the severity
+  score of the zipfile is greater than 20, the gauge will point below, past the last color block.
+  */
   return (
     <Card.Group>
       <Card>
         <Card.Header>Overall Zip File Severity</Card.Header>
-        <CardContent>FIX GAUGE</CardContent>
         <Card.Content>
           <GaugeChart
             id="gauge-chart1"
-            nrOfLevels={9}
-            percent={props.zipfile.SeverityScore / 10}
+            nrOfLevels={20}
+            percent={props.zipfile.SeverityScore / 20}
             textColor="#345243"
             needleColor="#8A948F"
-            formatTextValue={(value) => value / 10}
+            formatTextValue={(value) => props.zipfile.SeverityScore}
           />
         </Card.Content>
       </Card>
@@ -225,7 +214,6 @@ function ChartsPage(props) {
       </Card>
       <Card>
         <Card.Header>Severity Scores of All Files</Card.Header>
-        <Card.Content>To Do: Files can have any severity, not just 0-10; Doesn't appear b/c input is now a map but expects array.</Card.Content>
         <Card.Content>
           <Pie data={getPieData(freqOfSev)} />
         </Card.Content>
@@ -253,7 +241,7 @@ function ChartsPage(props) {
   );
 }
 
-// Used by Metrics.js
+//================= Used by Metrics.js =======================//
 function ZipChartsPage(props) {
   // props is all zip files current stored
   const zipfiles = props.files;
@@ -261,6 +249,21 @@ function ZipChartsPage(props) {
   // get frequency of zip file vulnerability scores
   var freqOfVuln = new Array(10).fill(0);
   zipfiles.forEach((file) => freqOfVuln[file.severityScore - 1]++);
+
+  // get frequency of severities of all zip files in account database
+  var freqOfSev = new Map();
+  zipfiles.forEach(
+    (file) => {
+      console.log(file)
+      console.log(file.severityScore)
+      if (freqOfSev.has(file.severityScore)) {
+        freqOfSev.set(file.severityScore, freqOfSev.get(file.severityScore) + 1)
+      }
+      else {
+        freqOfSev.set(file.severityScore, 1)
+      }
+    }
+  )
 
   // get average severity count of the zip files
   var fileSevCount = 0;
@@ -278,19 +281,22 @@ function ZipChartsPage(props) {
     zipSev.push(file.severityScore);
   });
 
+  /*
+  The gauge is a range from 0 to 20. This is arbitrary but will probably be good for most files. If the average
+  severity score all zipfiles is greater than 20, the gauge will point below, past the last color block.
+  */
   return (
     <Card.Group>
       <Card>
         <Card.Header>Average Severity Score of All Zip Files</Card.Header>
-        <CardContent>FIX GAUGE</CardContent>
         <Card.Content>
           <GaugeChart
             id="gauge-chart2"
-            nrOfLevels={9}
-            percent={fileSevAverage / 10}
+            nrOfLevels={20}
+            percent={fileSevAverage / 20}
             textColor="#345243"
             needleColor="#8A948F"
-            formatTextValue={(value) => value / 10}
+            formatTextValue={(value) => fileSevAverage.toString()}
           />
         </Card.Content>
       </Card>
@@ -311,13 +317,18 @@ function ZipChartsPage(props) {
       </Card>
       <Card>
         <Card.Header>Severity Scores of All Zip Files</Card.Header>
-        <CardContent>TODO: Doesn't appear b/c zero is not an option - need to support variable labels/severities</CardContent>
-        <Pie data={getPieData(freqOfVuln)} />
+        <Pie data={getPieData(freqOfSev)} />
+      </Card>
+      <Card style={{ width: '42.5rem' }}>
+        <Card.Header>Severity Scores Over Time</Card.Header>
+        <Line data={getLineData(zipDate, zipSev)} />
       </Card>
       <Card>
-        <Card.Header>Severity Scores Over Time</Card.Header>
-        <CardContent>Change size to be longer</CardContent>
-        <Line data={getLineData(zipDate, zipSev)} />
+        <Card.Header>Vulnerabilities by Language</Card.Header>
+        <Card.Content>
+          TODO
+          <Radar data={getRadarData(freqOfVuln)} />
+        </Card.Content>
       </Card>
     </Card.Group>
   );
