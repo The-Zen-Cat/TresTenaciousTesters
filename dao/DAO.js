@@ -266,42 +266,44 @@ exports.getZipFile = async (id) => {
     });
   console.log("hello world");
   console.log(zipFile);
-  zipFile.Files.forEach((file, i) => {
-    if (file.Errors) {
-      file.Errors.forEach((error, k) => {
-        const updatedError = {
-          ErrorType: ErrorList[error["ErrorType"]],
-          Line: error.Line,
-          Column: error.Column,
-          NodeType: error.NodeType,
-          MessageId: error.MessageId,
-          EndLine: error.EndLine,
-          EndColumn: error.EndColumn,
-        };
-        zipFile.Files[i].Errors[k] = updatedError;
-      });
-    }
-    if (file.PyErrors) {
-      file.PyErrors.forEach((error, k) => {
-        const updatedError = {
-          ErrorType: PYErrorList[error["ErrorType"]],
-          Line: error.LineNumber,
-          Message: error.Message,
-        };
-        zipFile.Files[i].PyErrors[k] = updatedError;
-      });
-    }
-    if (file.PhpErrors) {
-      file.PhpErrors.forEach((error, k) => {
-        const updatedError = {
-          ErrorType: PHPErrorList[error["ErrorType"]],
-          Line: error.LineNumber,
-          Message: error.Message,
-        };
-        zipFile.Files[i].PhpErrors[k] = updatedError;
-      });
-    }
-  });
+  if (zipFile != null) {
+    zipFile.Files.forEach((file, i) => {
+      if (file.Errors) {
+        file.Errors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: ErrorList[error["ErrorType"]],
+            Line: error.Line,
+            Column: error.Column,
+            NodeType: error.NodeType,
+            MessageId: error.MessageId,
+            EndLine: error.EndLine,
+            EndColumn: error.EndColumn,
+          };
+          zipFile.Files[i].Errors[k] = updatedError;
+        });
+      }
+      if (file.PyErrors) {
+        file.PyErrors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: PYErrorList[error["ErrorType"]],
+            Line: error.LineNumber,
+            Message: error.Message,
+          };
+          zipFile.Files[i].PyErrors[k] = updatedError;
+        });
+      }
+      if (file.PhpErrors) {
+        file.PhpErrors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: PHPErrorList[error["ErrorType"]],
+            Line: error.LineNumber,
+            Message: error.Message,
+          };
+          zipFile.Files[i].PhpErrors[k] = updatedError;
+        });
+      }
+    });
+  }
   return zipFile;
 };
 
@@ -350,9 +352,10 @@ exports.deleteZipFolder = async (zipFolderID) => {
     }
     await File.deleteOne({ id: file._id }).exec();
   });
-
-  await ZipFile.deleteOne({ id: zipFile._id }).exec();
+  console.log("final delete stage: zip file id : " + zipFile._id);
+  await ZipFile.deleteOne({ _id: zipFile._id }).exec();
 };
+
 exports.clearDatabase = async () => {
   await ZipFile.deleteMany();
   await Student.deleteMany();

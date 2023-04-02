@@ -54,6 +54,16 @@ function MainPage(props) {
 
   const filterData = [
     {
+      key: "0",
+      text: "No Score Filter",
+      value: "0",
+      label: {
+        color: "green",
+        empty: true,
+        circular: true,
+      },
+    },
+    {
       key: "1",
       text: "1",
       value: "1",
@@ -157,6 +167,7 @@ function MainPage(props) {
 
   const deleteZipFile = (id) => {
     setConfirmDeleteOpen(false);
+    console.log("id number for deletezipfile: " + id);
     deleteZipFolder(id);
     //setFiles(files.filter((file) => file.id !== id));
     updatenum++;
@@ -200,6 +211,8 @@ function MainPage(props) {
   };
 
   const getFiles = () => {
+    console.log("FILES:");
+    console.log(files);
     let filteredFiles = [...files];
     if (filenameFilter !== "") {
       filteredFiles = files.filter((file) =>
@@ -222,16 +235,20 @@ function MainPage(props) {
         new Date(file.date) >= dateFilter[0] &&
         new Date(file.date) <= dateFilter[1]
     );
+    console.log(filteredFiles);
 
+    console.log("FILTERED FILES:");
     return filteredFiles;
   };
 
   const getStudentFilesCards = () => {
-    files.forEach((f) => console.log(f.id));
+    files.forEach((f) => console.log(f.id + f.name));
+
     return (
       <Card.Group>
-        {getFiles().map((file) => (
+        {getFiles().map((file, index) => (
           <Card
+            key={index}
             style={{
               backgroundColor: `${getColor(file.SeverityScore)}`,
             }}
@@ -261,7 +278,7 @@ function MainPage(props) {
                 <Button
                   basic
                   color="red"
-                  onClick={() => setConfirmDeleteOpen(true)}
+                  onClick={() => deleteZipFile(file.id)}
                 >
                   <Icon name="trash" />
                   delete
@@ -270,7 +287,17 @@ function MainPage(props) {
                   content="Are you sure you want to delete this zip folder?"
                   open={confirmDeleteOpen}
                   onCancel={() => setConfirmDeleteOpen(false)}
-                  onConfirm={() => deleteZipFile(file.id)}
+                  onConfirm={() => {
+                    console.log(
+                      "file itself: " +
+                        file +
+                        "onconfirm: fileid: " +
+                        file.id +
+                        " file name: " +
+                        file.name
+                    );
+                    deleteZipFile(file.id);
+                  }}
                 />
               </div>
             </Card.Content>

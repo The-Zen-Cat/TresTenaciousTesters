@@ -10,7 +10,7 @@ exports.PHPErrorList[0] = {
 	Language: "PHP",
 	Name: "TaintedSql",
 	Description:
-		"Emitted when user-controlled input can be passed into to a SQL command.",
+		"used for strings that could contain SQL",
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSql/"
@@ -19,7 +19,7 @@ exports.PHPErrorList[1] = {
 	Language: "PHP",
 	Name: "TaintedLdap",
 	Description:
-		"Potential LDAP injection. This rule is emitted when user-controlled input can be passed into an LDAP request.",
+		"used for strings that could contain a ldap DN or filter",
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedLdap/"
@@ -28,7 +28,7 @@ exports.PHPErrorList[2] = {
 	Language: "PHP",
 	Name: "TaintedHtml",
 	Description:
-		"Emitted when user-controlled input that can contain HTML can be passed into to an echo statement.",
+		"used for strings that could contain angle brackets or unquoted strings",
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedHtml/"
@@ -64,7 +64,7 @@ exports.PHPErrorList[6] = {
 	Language: "PHP",
 	Name: "TaintedUnserialize",
 	Description:
-		"Tainted input detected to an unserialize call.",
+		"used for strings that could contain a serialized string",
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedUnserialize/"
@@ -73,7 +73,7 @@ exports.PHPErrorList[7] = {
 	Language: "PHP",
 	Name: "TaintedInput",
 	Description:
-		"Emitted when tainted input detection is turned on",
+		"used for strings that could contain a path being included",
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedInput/"
