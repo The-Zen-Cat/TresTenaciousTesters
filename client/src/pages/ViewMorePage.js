@@ -26,7 +26,6 @@ function ViewMorePage(props) {
 	useEffect(() => {
 		async function fetchZipFileData() {
 		  const response = (await getZipFile(id)).data; 
-		  console.log(response);
 		  setZipFile(response);
 		}
 		fetchZipFileData();
