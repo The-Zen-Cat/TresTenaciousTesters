@@ -937,9 +937,8 @@ app.post("/upload", async (req, res) => {
           null,
           null, // no result source for py errors, can add later
           null,
-          null,
-          null,
           phpErrors,
+          null,
           false,
           false,
           true,
