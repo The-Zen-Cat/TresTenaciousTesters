@@ -50,9 +50,9 @@ function getRadarData(dataArray) {
 // Used 99 as the min because that was the smallest value originally in hardcoded colors
 // Returns a string "rgba(num1, num2, num3, " leaving last entry to be filled in as .3 (background) or 1 (border)
 function getRandomColor() {
-  var num1 = Math.random() * (255 - 99) + 99;
-  var num2 = Math.random() * (255 - 99) + 99;
-  var num3 = Math.random() * (255 - 99) + 99;
+  var num1 = Math.random() * (255 - 0) + 0;
+  var num2 = Math.random() * (255 - 0) + 0;
+  var num3 = Math.random() * (255 - 0) + 0;
   return "rgba(" + num1 + ", " + num2 + ", " + num3 + ", "
 }
 
@@ -62,10 +62,12 @@ function getPieData(sevFreqMap) {
   var backColor = []
   var bordColor = []
   for (const [sevScore, freq] of sevFreqMap) {
-    sevScores.push(sevScore.toString())
-    frequencies.push(freq)
-    backColor.push(getRandomColor() + "0.3)")
-    bordColor.push(getRandomColor() + "1)")
+    if (sevScore !== undefined) {
+      sevScores.push(sevScore.toString())
+      frequencies.push(freq)
+      backColor.push(getRandomColor() + "0.3)")
+      bordColor.push(getRandomColor() + "1)")
+    } 
   }
   
   return {
@@ -143,6 +145,38 @@ function getStandardDeviation(array) {
   );
 }
 
+function getGaugePercent(avgSevScore) {
+  var percent;
+  if (avgSevScore === 0) {
+    percent = 0;
+  }
+  else if (avgSevScore === 1) {
+    percent = .15;
+  }
+  else if (avgSevScore === 2) {
+    percent = .3
+  }
+  else if (avgSevScore === 3) {
+    percent = .45
+  }
+  else if (avgSevScore === 4) {
+    percent = .60
+  }
+  else if (avgSevScore === 5) {
+    percent = .75
+  }
+  else if (avgSevScore === 6) {
+    percent = .80
+  }
+  else if (avgSevScore === 7) {
+    percent = .95
+  }
+  else {
+    percent = .99
+  }
+  return percent;
+}
+
 //=============== Used by ViewMorePage.js =================//
 function ChartsPage(props) {
   // get list of errors from all files in zip 
@@ -165,6 +199,12 @@ function ChartsPage(props) {
     }
   )
 
+  // get average sev score per file and percent for gauge
+  // Note: Saving percent in a const and passing that in to gauge increases likelihood the needle will display
+  var fileTotalCount = props.zipfile.FileCount;
+  var avgSevScore = Math.round(props.zipfile.SeverityScore / fileTotalCount);
+  const percent = getGaugePercent(avgSevScore)
+
   // get most popular vulnerabilities
   var vulns = new Map();
   errorList.forEach((error) => {
@@ -178,21 +218,23 @@ function ChartsPage(props) {
   const sortedVulns = new Map([...vulns.entries()].sort((a, b) => b[1] - a[1]));
 
   /*
-  The gauge is a range from 0 to 20. This is arbitrary but will probably be good for most files. If the severity
-  score of the zipfile is greater than 20, the gauge will point below, past the last color block.
+  Gauge: Percent determines where needle points and is dependent on the avg severity score per file in the zip file.
+  An average score of 0-2, meaning 0 to 1 errors per file generally, is green, while a score of 5+ is red.
+  Displays the average severity score per file.
+  See getGaugePercent function.
   */
   return (
     <Card.Group>
       <Card>
-        <Card.Header>Overall Zip File Severity</Card.Header>
+        <Card.Header>Average Severity Score Per File</Card.Header>
         <Card.Content>
           <GaugeChart
             id="gauge-chart1"
-            nrOfLevels={20}
-            percent={props.zipfile.SeverityScore / 20}
+            nrOfLevels={3}
+            percent={percent}
             textColor="#345243"
             needleColor="#8A948F"
-            formatTextValue={(value) => props.zipfile.SeverityScore}
+            formatTextValue={(value) => avgSevScore.toString()}
           />
         </Card.Content>
       </Card>
@@ -254,8 +296,6 @@ function ZipChartsPage(props) {
   var freqOfSev = new Map();
   zipfiles.forEach(
     (file) => {
-      console.log(file)
-      console.log(file.severityScore)
       if (freqOfSev.has(file.severityScore)) {
         freqOfSev.set(file.severityScore, freqOfSev.get(file.severityScore) + 1)
       }
@@ -265,13 +305,23 @@ function ZipChartsPage(props) {
     }
   )
 
-  // get average severity count of the zip files
-  var fileSevCount = 0;
+  // get average severity score per file and gauge percent
+  var fileSevTotal = 0;
   zipfiles.forEach((zipfile) => {
-    fileSevCount += zipfile.severityScore;
+    if (zipfile.severityScore !== undefined) {
+      fileSevTotal += zipfile.severityScore;
+    }
   }
    );
-  var fileSevAverage = Math.round(fileSevCount / zipfiles.length);
+
+  var countFilesinZips = 0;
+  zipfiles.forEach((zipfile) => {
+    if (zipfile.fileCount !== undefined) {
+      countFilesinZips += zipfile.fileCount
+    }
+  });
+  var avgSevScore = Math.round(fileSevTotal / countFilesinZips)
+  const percent = getGaugePercent(avgSevScore)
 
   // get array of zip file dates and severity scores
   var zipDate = [];
@@ -282,21 +332,23 @@ function ZipChartsPage(props) {
   });
 
   /*
-  The gauge is a range from 0 to 20. This is arbitrary but will probably be good for most files. If the average
-  severity score all zipfiles is greater than 20, the gauge will point below, past the last color block.
+  Gauge: Percent determines where needle points and is dependent on the avg severity score per file in the zip file.
+  An average score of 0-2, meaning 0 to 1 errors per file generally, is green, while a score of 5+ is red.
+  Displays the average severity score per file across all zip files in account database.
+  See getGaugePercent function.
   */
   return (
     <Card.Group>
       <Card>
-        <Card.Header>Average Severity Score of All Zip Files</Card.Header>
+        <Card.Header>Average Severity Score Per File</Card.Header>
         <Card.Content>
           <GaugeChart
             id="gauge-chart2"
-            nrOfLevels={20}
-            percent={fileSevAverage / 20}
+            nrOfLevels={3}
+            percent={percent}
             textColor="#345243"
             needleColor="#8A948F"
-            formatTextValue={(value) => fileSevAverage.toString()}
+            formatTextValue={(value) => avgSevScore.toString()}
           />
         </Card.Content>
       </Card>

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import {
 	Grid,
@@ -21,8 +22,6 @@ function ViewMorePage(props) {
 	const [open, setOpen] = useState(false);
 	const [errors, setErrors] = useState([]);
 	const [fileNameFilter, setFileNameFilter] = useState("");
-
-	console.log(id);
 
 	useEffect(() => {
 		async function fetchZipFileData() {
