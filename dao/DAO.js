@@ -350,6 +350,11 @@ exports.deleteZipFolder = async (zipFolderID) => {
         await Error.deleteOne({ id: error._id }).exec();
       });
     }
+    if (file.isPhpFile == true) {
+      file.PhpErrors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+    }
     await File.deleteOne({ id: file._id }).exec();
   });
   console.log("final delete stage: zip file id : " + zipFile._id);

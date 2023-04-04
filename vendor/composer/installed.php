@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => NULL,
+        'pretty_version' => 'dev-hope-psalmOut',
+        'version' => 'dev-hope-psalmOut',
+        'reference' => 'a88ed2845a43841b443d6bee019d8a7a4b67c22a',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => NULL,
+            'pretty_version' => 'dev-hope-psalmOut',
+            'version' => 'dev-hope-psalmOut',
+            'reference' => 'a88ed2845a43841b443d6bee019d8a7a4b67c22a',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -34,15 +34,6 @@
             'reference' => 'acbd8002b3536485c997c4e019206b3f10ca15bd',
             'type' => 'library',
             'install_path' => __DIR__ . '/../amphp/byte-stream',
-            'aliases' => array(),
-            'dev_requirement' => true,
-        ),
-        'composer/package-versions-deprecated' => array(
-            'pretty_version' => '1.11.99.5',
-            'version' => '1.11.99.5',
-            'reference' => 'b4f54f74ef3453349c24a845d22392cd31e65f1d',
-            'type' => 'composer-plugin',
-            'install_path' => __DIR__ . '/./package-versions-deprecated',
             'aliases' => array(),
             'dev_requirement' => true,
         ),
@@ -154,12 +145,6 @@
             'aliases' => array(),
             'dev_requirement' => true,
         ),
-        'ocramius/package-versions' => array(
-            'dev_requirement' => true,
-            'replaced' => array(
-                0 => '1.11.99',
-            ),
-        ),
         'phpdocumentor/graphviz' => array(
             'pretty_version' => '1.0.4',
             'version' => '1.0.4.0',
@@ -199,7 +184,7 @@
         'psalm/psalm' => array(
             'dev_requirement' => true,
             'provided' => array(
-                0 => '5.6.0',
+                0 => '5.9.0',
             ),
         ),
         'psr/container' => array(
@@ -335,9 +320,9 @@
             'dev_requirement' => true,
         ),
         'vimeo/psalm' => array(
-            'pretty_version' => '5.6.0',
-            'version' => '5.6.0.0',
-            'reference' => 'e784128902dfe01d489c4123d69918a9f3c1eac5',
+            'pretty_version' => '5.9.0',
+            'version' => '5.9.0.0',
+            'reference' => '8b9ad1eb9e8b7d3101f949291da2b9f7767cd163',
             'type' => 'library',
             'install_path' => __DIR__ . '/../vimeo/psalm',
             'aliases' => array(),

@@ -39,6 +39,7 @@ use Psalm\Issue\InaccessibleMethod;
 use Psalm\Issue\InternalClass;
 use Psalm\Issue\InvalidEnumCaseValue;
 use Psalm\Issue\InvalidExtendClass;
+use Psalm\Issue\InvalidInterfaceImplementation;
 use Psalm\Issue\InvalidTraversableImplementation;
 use Psalm\Issue\MethodSignatureMismatch;
 use Psalm\Issue\MismatchingDocblockPropertyType;
@@ -359,16 +360,6 @@ class ClassAnalyzer extends ClassLikeAnalyzer
 
         if ($storage->invalid_dependencies) {
             return;
-        }
-
-        if ($this->leftover_stmts) {
-            (new StatementsAnalyzer(
-                $this,
-                new NodeDataProvider(),
-            ))->analyze(
-                $this->leftover_stmts,
-                $class_context,
-            );
         }
 
         if (!$storage->abstract) {
@@ -2114,6 +2105,35 @@ class ClassAnalyzer extends ClassLikeAnalyzer
                 );
             }
 
+            if ($fq_interface_name_lc === 'throwable'
+                && $codebase->analysis_php_version_id >= 7_00_00
+                && !$storage->abstract
+                && !isset($storage->parent_classes['exception'])
+                && !isset($storage->parent_classes['error'])
+            ) {
+                IssueBuffer::maybeAdd(
+                    new InvalidInterfaceImplementation(
+                        'Classes implementing Throwable should extend Exception or Error',
+                        $code_location,
+                        $fq_class_name,
+                    ),
+                );
+            }
+
+            if (($fq_interface_name_lc === 'unitenum'
+                    || $fq_interface_name_lc === 'backedenum')
+                && !$storage->is_enum
+                && $codebase->analysis_php_version_id >= 8_01_00
+            ) {
+                IssueBuffer::maybeAdd(
+                    new InvalidInterfaceImplementation(
+                        $fq_interface_name . ' cannot be implemented by classes',
+                        $code_location,
+                        $fq_class_name,
+                    ),
+                );
+            }
+
             if ($interface_storage->deprecated) {
                 IssueBuffer::maybeAdd(
                     new DeprecatedInterface(
@@ -2330,6 +2350,18 @@ class ClassAnalyzer extends ClassLikeAnalyzer
                 );
             }
 
+            if ($parent_class_storage->readonly && !$storage->readonly) {
+                IssueBuffer::maybeAdd(
+                    new InvalidExtendClass(
+                        'Non-readonly class ' . $fq_class_name . ' may not inherit from '
+                        . 'readonly class ' . $parent_fq_class_name,
+                        $code_location,
+                        $fq_class_name,
+                    ),
+                    $storage->suppressed_issues + $this->getSuppressedIssues(),
+                );
+            }
+
             if ($parent_class_storage->deprecated) {
                 IssueBuffer::maybeAdd(
                     new DeprecatedClass(
@@ -2434,7 +2466,7 @@ class ClassAnalyzer extends ClassLikeAnalyzer
                         $storage->name,
                     ),
                 );
-            } elseif ($case_storage->value !== null && $storage->enum_type !== null) {
+            } elseif ($case_storage->value !== null) {
                 if ((is_int($case_storage->value) && $storage->enum_type === 'string')
                     || (is_string($case_storage->value) && $storage->enum_type === 'int')
                 ) {

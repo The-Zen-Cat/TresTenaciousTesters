@@ -23,7 +23,6 @@ return array(
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
     'Psalm\\' => array($vendorDir . '/vimeo/psalm/src/Psalm', $vendorDir . '/vimeo/psalm/src/Psalm'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
-    'PackageVersions\\' => array($vendorDir . '/composer/package-versions-deprecated/src/PackageVersions'),
     'PHPCfg\\' => array($vendorDir . '/ircmaxell/php-cfg/lib/PHPCfg'),
     'LanguageServerProtocol\\' => array($vendorDir . '/felixfbecker/language-server-protocol/src'),
     'Fidry\\CpuCoreCounter\\' => array($vendorDir . '/fidry/cpu-core-counter/src'),

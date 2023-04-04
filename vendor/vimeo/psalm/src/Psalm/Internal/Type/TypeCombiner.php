@@ -362,9 +362,11 @@ class TypeCombiner
             $new_types[] = $type->setFromDocblock($from_docblock);
         }
 
-        if (!$new_types && !$has_never) {
-            throw new UnexpectedValueException('There should be types here');
-        } elseif (!$new_types && $has_never) {
+        if (!$new_types) {
+            if (!$has_never) {
+                throw new UnexpectedValueException('There should be types here');
+            }
+
             $union_type = Type::getNever($from_docblock);
         } else {
             $union_type = new Union($new_types);
@@ -549,6 +551,8 @@ class TypeCombiner
             }
 
             foreach ($type->type_params as $i => $type_param) {
+                // See https://github.com/vimeo/psalm/pull/9439#issuecomment-1464563015
+                /** @psalm-suppress PropertyTypeCoercion */
                 $combination->array_type_params[$i] = Type::combineUnionTypes(
                     $combination->array_type_params[$i] ?? null,
                     $type_param,
@@ -597,6 +601,8 @@ class TypeCombiner
 
         if ($type instanceof TClassStringMap) {
             foreach ([$type->getStandinKeyParam(), $type->value_param] as $i => $type_param) {
+                // See https://github.com/vimeo/psalm/pull/9439#issuecomment-1464563015
+                /** @psalm-suppress PropertyTypeCoercion */
                 $combination->array_type_params[$i] = Type::combineUnionTypes(
                     $combination->array_type_params[$i] ?? null,
                     $type_param,
@@ -1351,9 +1357,7 @@ class TypeCombiner
 
         if (!$combination->array_type_params || $combination->array_type_params[1]->isNever()) {
             if (!$overwrite_empty_array
-                && ($combination->array_type_params
-                    && ($combination->array_type_params[1]->isNever()
-                        || $combination->array_type_params[1]->isMixed()))
+                && $combination->array_type_params
             ) {
                 foreach ($combination->objectlike_entries as &$objectlike_entry) {
                     $objectlike_entry = $objectlike_entry->setPossiblyUndefined(true);
@@ -1473,7 +1477,7 @@ class TypeCombiner
                 } elseif ($type instanceof TKeyedArray && isset($type->class_strings[$property_name])) {
                     $objectlike_keys[$property_name] = new TLiteralClassString($property_name, $from_docblock);
                 } else {
-                    $objectlike_keys[$property_name] = new TLiteralString($property_name, $from_docblock);
+                    $objectlike_keys[$property_name] = Type::getAtomicStringFromLiteral($property_name, $from_docblock);
                 }
             }
 

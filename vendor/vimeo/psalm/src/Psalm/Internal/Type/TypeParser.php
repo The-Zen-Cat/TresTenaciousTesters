@@ -47,7 +47,6 @@ use Psalm\Type\Atomic\TKeyedArray;
 use Psalm\Type\Atomic\TLiteralClassString;
 use Psalm\Type\Atomic\TLiteralFloat;
 use Psalm\Type\Atomic\TLiteralInt;
-use Psalm\Type\Atomic\TLiteralString;
 use Psalm\Type\Atomic\TMixed;
 use Psalm\Type\Atomic\TNamedObject;
 use Psalm\Type\Atomic\TNonEmptyArray;
@@ -92,6 +91,7 @@ use function stripslashes;
 use function strlen;
 use function strpos;
 use function strtolower;
+use function strtr;
 use function substr;
 
 /**
@@ -104,7 +104,6 @@ class TypeParser
      * Parses a string type representation
      *
      * @param  list<array{0: string, 1: int, 2?: string}> $type_tokens
-     * @param  array{int,int}|null   $php_version
      * @param  array<string, array<string, Union>> $template_type_map
      * @param  array<string, TypeAlias> $type_aliases
      */
@@ -394,7 +393,7 @@ class TypeParser
         }
 
         if ($parse_tree->value[0] === '"' || $parse_tree->value[0] === '\'') {
-            return new TLiteralString(substr($parse_tree->value, 1, -1), $from_docblock);
+            return Type::getAtomicStringFromLiteral(substr($parse_tree->value, 1, -1), $from_docblock);
         }
 
         if (strpos($parse_tree->value, '::')) {
@@ -422,8 +421,8 @@ class TypeParser
             return new TLiteralFloat((float) $parse_tree->value, $from_docblock);
         }
 
-        if (preg_match('/^\-?(0|[1-9][0-9]*)$/', $parse_tree->value)) {
-            return new TLiteralInt((int) $parse_tree->value, $from_docblock);
+        if (preg_match('/^\-?(0|[1-9]([0-9_]*[0-9])?)$/', $parse_tree->value)) {
+            return new TLiteralInt((int) strtr($parse_tree->value, ['_' => '']), $from_docblock);
         }
 
         if (!preg_match('@^(\$this|\\\\?[a-zA-Z_\x7f-\xff][\\\\\-0-9a-zA-Z_\x7f-\xff]*)$@', $parse_tree->value)) {
@@ -716,7 +715,7 @@ class TypeParser
                     throw new TypeParseTreeException('Class string param should be a named object');
                 }
 
-                $types []= new TClassString($type->value, $type, false, false, false, $from_docblock);
+                $types[] = new TClassString($type->value, $type, false, false, false, $from_docblock);
             }
 
             return new Union($types);
@@ -1452,7 +1451,7 @@ class TypeParser
                         || ($had_optional && !$property_maybe_undefined)
                         || $type === 'array'
                         || $type === 'callable-array'
-                        || $previous_property_key != ($property_key-1)
+                        || $previous_property_key != ($property_key - 1)
                     )
                 ) {
                     $is_list = false;
@@ -1478,6 +1477,10 @@ class TypeParser
                 $had_optional = true;
             }
 
+            if (isset($properties[$property_key])) {
+                throw new TypeParseTreeException("Duplicate key $property_key detected");
+            }
+
             $properties[$property_key] = $property_type;
             if ($class_string) {
                 $class_strings[$property_key] = true;
@@ -1485,7 +1488,7 @@ class TypeParser
         }
 
         if ($had_explicit && $had_implicit) {
-            throw new TypeParseTreeException('Cannot mix explicit and implicit keys!');
+            throw new TypeParseTreeException('Cannot mix explicit and implicit keys');
         }
 
         if ($type === 'object') {
@@ -1500,7 +1503,7 @@ class TypeParser
         }
 
         if ($callable && !$properties) {
-            throw new TypeParseTreeException('A callable array cannot be empty!');
+            throw new TypeParseTreeException('A callable array cannot be empty');
         }
 
         if ($type !== 'array' && $type !== 'list') {
@@ -1508,7 +1511,7 @@ class TypeParser
         }
 
         if ($type === 'list' && !$is_list) {
-            throw new TypeParseTreeException('A list shape cannot describe a non-list!');
+            throw new TypeParseTreeException('A list shape cannot describe a non-list');
         }
 
         if (!$properties) {
@@ -1520,7 +1523,7 @@ class TypeParser
             $class_strings,
             $sealed
                 ? null
-                : [$is_list ? Type::getInt() : Type::getArrayKey(), Type::getMixed()],
+                : [$is_list ? Type::getListKey() : Type::getArrayKey(), Type::getMixed()],
             $is_list,
             $from_docblock,
         );

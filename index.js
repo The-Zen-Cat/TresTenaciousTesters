@@ -648,6 +648,7 @@ app.post("/upload", async (req, res) => {
           fileSeverity,
           true,
           false,
+          false,
           zipFileRecord._id
         );
         fileIDArray.push(fileRecord);
@@ -809,6 +810,7 @@ app.post("/upload", async (req, res) => {
           fileSeverity,
           false,
           true,
+          false,
           zipFileRecord._id
         );
         fileIDArray.push(fileRecord);
@@ -927,17 +929,20 @@ app.post("/upload", async (req, res) => {
         //Stores file on the database ?? not actually storing the file just name and length
         const fileRecord = await DAO.addFile(
           relativePath,
-          value.length,
+          null,
           null,
           null, //stuff that is not utilized
           null,
           null,
+          null,
           null, // no result source for py errors, can add later
           null,
+          null,
+          null,
           phpErrors,
-          fileSeverity,
-          true,
           false,
+          false,
+          true,
           zipFileRecord._id
         );
         fileIDArray.push(fileRecord);

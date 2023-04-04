@@ -33,8 +33,15 @@ const Schema = new mongoose.Schema({
       ref: "PYError",
     },
   ],
+  PhpErrors: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PHPError",
+    },
+  ],
   isPyFile: Boolean,
   isJavaFile: Boolean,
+  isPhpFile: Boolean,
   parentZipFileID: String,
 });
 

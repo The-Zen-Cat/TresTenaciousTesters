@@ -70,7 +70,6 @@ abstract class Type
     /**
      * Parses a string type representation
      *
-     * @param  array{int,int}|null   $php_version
      * @param  array<string, array<string, Union>> $template_type_map
      */
     public static function parseString(
@@ -252,29 +251,27 @@ abstract class Type
 
     public static function getString(?string $value = null): Union
     {
-        $type = null;
+        return new Union([$value === null ? new TString() : self::getAtomicStringFromLiteral($value)]);
+    }
 
-        if ($value !== null) {
-            $config = Config::getInstance();
+    /** @return TLiteralString|TNonEmptyString */
+    public static function getAtomicStringFromLiteral(string $value, bool $from_docblock = false): TString
+    {
+        $config = Config::getInstance();
 
-            $event = new StringInterpreterEvent($value, ProjectAnalyzer::getInstance()->getCodebase());
+        $event = new StringInterpreterEvent($value, ProjectAnalyzer::getInstance()->getCodebase());
 
-            $type = $config->eventDispatcher->dispatchStringInterpreter($event);
+        $type = $config->eventDispatcher->dispatchStringInterpreter($event);
 
-            if (!$type) {
-                if (strlen($value) < $config->max_string_length) {
-                    $type = new TLiteralString($value);
-                } else {
-                    $type = new TNonEmptyString();
-                }
+        if (!$type) {
+            if (strlen($value) < $config->max_string_length) {
+                $type = new TLiteralString($value, $from_docblock);
+            } else {
+                $type = new TNonEmptyString($from_docblock);
             }
         }
 
-        if (!$type) {
-            $type = new TString();
-        }
-
-        return new Union([$type]);
+        return $type;
     }
 
     /**
@@ -905,8 +902,8 @@ abstract class Type
             if ($intersection_atomic === null || $wider_type === null) {
                 throw new LogicException(
                     '$intersection_atomic and $wider_type should be both set or null.'
-                    .' Check the preceding code for errors.'
-                    .' Did you forget to assign one of the variables?',
+                    . ' Check the preceding code for errors.'
+                    . ' Did you forget to assign one of the variables?',
                 );
             }
             if (!self::mayHaveIntersection($intersection_atomic, $codebase)
@@ -914,7 +911,7 @@ abstract class Type
             ) {
                 throw new LogicException(
                     '$intersection_atomic and $wider_type should be both support intersection.'
-                    .' Check the preceding code for errors.',
+                    . ' Check the preceding code for errors.',
                 );
             }
 
