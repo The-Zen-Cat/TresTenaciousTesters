@@ -266,6 +266,7 @@ exports.getZipFile = async (id) => {
     });
   console.log("hello world");
   console.log(zipFile);
+<<<<<<< HEAD
   zipFile.Files.forEach((file, i) => {
     if (file.Errors) {
       file.Errors.forEach((error, k) => {
@@ -302,6 +303,36 @@ exports.getZipFile = async (id) => {
       });
     }
   });
+=======
+  if (zipFile != null) {
+    zipFile.Files.forEach((file, i) => {
+      if (file.Errors) {
+        file.Errors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: ErrorList[error["ErrorType"]],
+            Line: error.Line,
+            Column: error.Column,
+            NodeType: error.NodeType,
+            MessageId: error.MessageId,
+            EndLine: error.EndLine,
+            EndColumn: error.EndColumn,
+          };
+          zipFile.Files[i].Errors[k] = updatedError;
+        });
+      }
+      if (file.PyErrors) {
+        file.PyErrors.forEach((error, k) => {
+          const updatedError = {
+            ErrorType: PYErrorList[error["ErrorType"]],
+            Line: error.LineNumber,
+            Message: error.Message,
+          };
+          zipFile.Files[i].PyErrors[k] = updatedError;
+        });
+      }
+    });
+  }
+>>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
   return zipFile;
 };
 
@@ -336,16 +367,24 @@ exports.deleteZipFolder = async (zipFolderID) => {
       model: "File",
       populate: { path: "Errors", model: "Error" },
     });
-
+  console.log(zipFile);
   zipFile.Files.forEach(async (file, j) => {
-    file.Errors.forEach(async (error, k) => {
-      await Error.deleteOne({ id: error._id }).exec();
-    });
+    if (file.isJavaFile == true) {
+      file.Errors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+    }
+    if (file.isPyFile == true) {
+      file.PyErrors.forEach(async (error, k) => {
+        await Error.deleteOne({ id: error._id }).exec();
+      });
+    }
     await File.deleteOne({ id: file._id }).exec();
   });
-
-  await ZipFile.deleteOne({ id: zipFile._id }).exec();
+  console.log("final delete stage: zip file id : " + zipFile._id);
+  await ZipFile.deleteOne({ _id: zipFile._id }).exec();
 };
+
 exports.clearDatabase = async () => {
   await ZipFile.deleteMany();
   await Student.deleteMany();
