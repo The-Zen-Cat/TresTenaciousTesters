@@ -10,11 +10,7 @@ exports.PHPErrorList[0] = {
 	Language: "PHP",
 	Name: "TaintedSql",
 	Description:
-<<<<<<< HEAD
 		"Emitted when user-controlled input can be passed into to a SQL command.",
-=======
-		"used for strings that could contain SQL",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSql/"
@@ -23,11 +19,7 @@ exports.PHPErrorList[1] = {
 	Language: "PHP",
 	Name: "TaintedLdap",
 	Description:
-<<<<<<< HEAD
 		"Potential LDAP injection. This rule is emitted when user-controlled input can be passed into an LDAP request.",
-=======
-		"used for strings that could contain a ldap DN or filter",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedLdap/"
@@ -36,11 +28,7 @@ exports.PHPErrorList[2] = {
 	Language: "PHP",
 	Name: "TaintedHtml",
 	Description:
-<<<<<<< HEAD
 		"Emitted when user-controlled input that can contain HTML can be passed into to an echo statement.",
-=======
-		"used for strings that could contain angle brackets or unquoted strings",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedHtml/"
@@ -49,11 +37,7 @@ exports.PHPErrorList[3] = {
 	Language: "PHP",
 	Name: "TaintedInclude",
 	Description:
-<<<<<<< HEAD
 		"Emitted when user-controlled input can be passed into to an include or require expression.",
-=======
-		"used for strings that could contain unquoted strings",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedInclude/"
@@ -62,11 +46,7 @@ exports.PHPErrorList[4] = {
 	Language: "PHP",
 	Name: "TaintedShell",
 	Description:
-<<<<<<< HEAD
 		"Emitted when user-controlled input can be passed into to an exec call or similar.",
-=======
-		"used for strings that could contain shell commands",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedShell/"
@@ -75,11 +55,7 @@ exports.PHPErrorList[5] = {
 	Language: "PHP",
 	Name: "TaintedCallable",
 	Description:
-<<<<<<< HEAD
 		"Emitted when tainted text is used in an arbitrary function call.",
-=======
-		"used for callable strings that could be user-controlled",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedCallable/"
@@ -88,11 +64,7 @@ exports.PHPErrorList[6] = {
 	Language: "PHP",
 	Name: "TaintedUnserialize",
 	Description:
-<<<<<<< HEAD
 		"Tainted input detected to an unserialize call.",
-=======
-		"used for strings that could contain a serialized string",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedUnserialize/"
@@ -101,11 +73,7 @@ exports.PHPErrorList[7] = {
 	Language: "PHP",
 	Name: "TaintedInput",
 	Description:
-<<<<<<< HEAD
 		"Emitted when tainted input detection is turned on",
-=======
-		"used for strings that could contain a path being included",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedInput/"
@@ -114,11 +82,7 @@ exports.PHPErrorList[8] = {
 	Language: "PHP",
 	Name: "TaintedEval",
 	Description:
-<<<<<<< HEAD
 		"Emitted when user-controlled input can be passed into to an eval call.",
-=======
-		"used for strings that could contain code",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedEval/"
@@ -127,11 +91,7 @@ exports.PHPErrorList[9] = {
 	Language: "PHP",
 	Name: "TaintedSSRF",
 	Description:
-<<<<<<< HEAD
 		"Potential Server-Side Request Forgery vulnerability. This rule is emitted when user-controlled input can be passed into a network request.",
-=======
-		"used for strings that could contain text passed to Curl or similar",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSSRF/"
@@ -140,11 +100,7 @@ exports.PHPErrorList[10] = {
 	Language: "PHP",
 	Name: "TaintedFile",
 	Description:
-<<<<<<< HEAD
 		"This rule is emitted when user-controlled input can be passed into a sensitive file operation.",
-=======
-		"used for strings that could contain a path",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedFile/"
@@ -153,11 +109,7 @@ exports.PHPErrorList[11] = {
 	Language: "PHP",
 	Name: "TaintedCookie",
 	Description:
-<<<<<<< HEAD
 		"Potential cookie injection. This rule is emitted when user-controlled input can be passed into a cookie.",
-=======
-		"used for strings that could contain a http cookie",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedCookie/"
@@ -166,11 +118,7 @@ exports.PHPErrorList[12] = {
 	Language: "PHP",
 	Name: "TaintedHeader",
 	Description:
-<<<<<<< HEAD
 		"Potential header injection. This rule is emitted when user-controlled input can be passed into a HTTP header.",
-=======
-		"used for strings that could contain a http header",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedHeader/"
@@ -179,11 +127,7 @@ exports.PHPErrorList[13] = {
 	Language: "PHP",
 	Name: "TaintedUserSecret",
 	Description:
-<<<<<<< HEAD
 		"Emitted when tainted input detection is turned on and data marked as a user secret is detected somewhere it shouldn’t be.",
-=======
-		"used for strings that could contain user-supplied secrets",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedUserSecret/"
@@ -192,11 +136,7 @@ exports.PHPErrorList[14] = {
 	Language: "PHP",
 	Name: "TaintedSystemSecret",
 	Description:
-<<<<<<< HEAD
 		"Emitted when data marked as a system secret is detected somewhere it shouldn’t be.",
-=======
-		"used for strings that could contain system secrets",
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
 	Severity: 2,
 	CWE: null,
 	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSystemSecret/"

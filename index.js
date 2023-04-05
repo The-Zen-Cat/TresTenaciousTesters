@@ -332,11 +332,11 @@ app.post("/upload", async (req, res) => {
       else return false;
     };
 
-    //function definition used below to check for php files
-    const hasPHPFiles = (element) => {
-      if (path.extname(element) == ".php") return true;
-      else return false;
-    };
+    // //function definition used below to check for php files
+    // const hasPHPFiles = (element) => {
+    //   if (path.extname(element) == ".php") return true;
+    //   else return false;
+    // };
 
     //
     //console.log("Through dir is: ");
@@ -383,16 +383,18 @@ app.post("/upload", async (req, res) => {
               true
             )
           );
-        } else if (hasPHPFiles(fileNamesInZipFolder.at(i))) {
-          console.log("adding php files!");
-          phpResults.set(
-            fileNamesInZipFolder.at(i),
-            await Psalm.runPsalm(
-              "./extracted/" + fileNamesInZipFolder.at(i),
-              true
-            )
-          );
-        } else {
+        } 
+        // else if (hasPHPFiles(fileNamesInZipFolder.at(i))) {
+        //   console.log("adding php files!");
+        //   phpResults.set(
+        //     fileNamesInZipFolder.at(i),
+        //     await Psalm.runPsalm(
+        //       "./extracted/" + fileNamesInZipFolder.at(i),
+        //       true
+        //     )
+        //   );
+        // } 
+        else {
           if (
             fileNamesInZipFolder
               .at(i)
@@ -440,12 +442,12 @@ app.post("/upload", async (req, res) => {
     //console.log(phpResults);
     console.log("javaResults size: ");
     console.log(javaResults.size);
-    console.log("phpResults size: ");
-    console.log(phpResults.size);
+    //console.log("phpResults size: ");
+    //console.log(phpResults.size);
 
     //add a record of the parsed zip file which includes:
     //name, data, owner (currently logged in user), filecount
-    const fileCount = javaResults.size + pythonResults.size + phpResults.size;
+    const fileCount = javaResults.size + pythonResults.size;
     console.log(fileCount);
     const zipFileRecord = await DAO.addZipFile(
       zipFileName,
@@ -454,7 +456,7 @@ app.post("/upload", async (req, res) => {
       fileCount, // num files tested (java + python + php
       javaResults.size,
       pythonResults.size,
-      phpResults.size
+      //phpResults.size
     );
 
     //add a student record from each file parsed in the zip
@@ -812,132 +814,120 @@ app.post("/upload", async (req, res) => {
           zipFileRecord._id
         );
         fileIDArray.push(fileRecord);
-
-        //Gets the current student DB id - RELATIVEPATH MUST BE IN CANVAS FORMAT
-        // const currentStudentID = getStudentIDFromRelPath(
-        //   relativePath,
-        //   studentIDsByName
-        // );
-
-        // adding files severity scores to the student so we can calculate the students severity score
-        //listOfSeverityScoreFilesOwnedByStudents
-        //  .get(currentStudentID)
-        //  .push(fileSeverity);
-        //DAO.addFileToStudent(currentStudentID, fileRecord._id);
-      })
-    ); //Out of ESLINT Loop
-
-    console.log("THE PHP RESULTS: " + phpResults);
-    console.log(phpResults);
-
-    const phpErrorsMap = new Map();
-    let phpFileErrors = [];
-    const phpErrorsMap2 = await Promise.all(
-      results.map(async (result) => {
-        //get numerical php error type
-        console.log("results length: " + result.length);
-
-        if (result.length > 0) {
-          for (let i = 0; i < result.length; i++) {
-            console.log(result.at(i).test_id.substring(1));
-            totalErrors++;
-            const currentErrorType = parseInt(
-              result.at(i).test_id.substring(1)
-            );
-            console.log(
-              "phpError number: " + PHPErrorTypes[currentErrorType]["Severity"]
-            );
-            console.log(
-              currentErrorType,
-              PHPErrorTypes[currentErrorType]["Severity"],
-              result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
-              zipFileName,
-              result.at(i).issue_text,
-              result.at(i).issue_confidence,
-              result.at(i).issue_severity,
-              result.at(i).issue_cwe.link,
-              result.at(i).line_number,
-              result.at(i).line_range,
-              result.at(i).test_name,
-              result.at(i).test_id
-            );
-            //console.log(result.test_id.substring(1));
-            //add Errors to database
-            const error = await DAO.addPHPError(
-              currentErrorType,
-              PHPErrorTypes[currentErrorType]["Severity"],
-              result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
-              zipFileName,
-              result.at(i).issue_text,
-              result.at(i).issue_confidence,
-              result.at(i).issue_severity,
-              result.at(i).issue_cwe.link,
-              result.at(i).line_number,
-              result.at(i).line_range,
-              result.at(i).test_name,
-              result.at(i).test_id
-            );
-
-            //case: no errors for file yet recorded, so add it to map
-            if (!fileErrorsMap.has(result.at(i).filename)) {
-              fileErrors = []; // clear?
-              fileErrors.push({ err: error, id: currentErrorType });
-              fileErrorsMap.set(result.at(i).filename, fileErrors); //THIS IS USING FILENAME and not unique identifier - duplicate names not allowed?
-            } else {
-              // file already in map - get filename associated fileErrors array and add error to it
-              //fileErrors.push({ err: error, id: currentErrorType });
-              //fileErrorsMap.set(result.filename, fileErrors);
-              fileErrorsMap
-                .get(result.at(i).filename)
-                .push({ err: error, id: currentErrorType });
-            }
-          }
-        }
-        return fileErrorsMap;
       })
     );
-    console.log("Psalm MADE IT TO HERE!");
-    console.log(fileErrorsMap.size);
-    if (fileErrorsMap.size > 0) {
-      //connect errors to fileRecord
-      for (let [key, value] of fileErrorsMap.entries()) {
-        //key = filename ; val = array of mongoose schema errors and numerical pyErrorid for the coresponding file
 
-        const severityScores = [];
-        const PHPerrors = [];
-        await value.forEach((element) => {
-          console.log(element.id);
-          console.log(element.err);
-          severityScores.push(PHPErrorTypes[element.id]["Severity"]);
+    // console.log("THE PHP RESULTS: " + phpResults);
+    // console.log(phpResults);
 
-          PHPerrors.push(element.err);
-        });
-        //
-        //console.log();
-        //TODO: redo get severity score function
-        const fileSeverity = getSeverityScore(severityScores, -1);
-        var path1 = require("path");
-        const relativePath = path1.basename(key);
+    // const phpErrorsMap = new Map();
+    // let phpFileErrors = [];
+    // const phpErrorsMap2 = await Promise.all(
+    //   results.map(async (result) => {
+    //     //get numerical php error type
+    //     console.log("results length: " + result.length);
 
-        //Stores file on the database ?? not actually storing the file just name and length
-        const fileRecord = await DAO.addFile(
-          relativePath,
-          value.length,
-          null,
-          null, //stuff that is not utilized
-          null,
-          null,
-          null, // no result source for py errors, can add later
-          null,
-          phpErrors,
-          fileSeverity,
-          true,
-          false,
-          zipFileRecord._id
-        );
-        fileIDArray.push(fileRecord);
-      }
-    }
+    //     if (result.length > 0) {
+    //       for (let i = 0; i < result.length; i++) {
+    //         console.log(result.at(i).test_id.substring(1));
+    //         totalErrors++;
+    //         const currentErrorType = parseInt(
+    //           result.at(i).test_id.substring(1)
+    //         );
+    //         console.log(
+    //           "phpError number: " + PHPErrorTypes[currentErrorType]["Severity"]
+    //         );
+    //         console.log(
+    //           currentErrorType,
+    //           PHPErrorTypes[currentErrorType]["Severity"],
+    //           result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
+    //           zipFileName,
+    //           result.at(i).issue_text,
+    //           result.at(i).issue_confidence,
+    //           result.at(i).issue_severity,
+    //           result.at(i).issue_cwe.link,
+    //           result.at(i).line_number,
+    //           result.at(i).line_range,
+    //           result.at(i).test_name,
+    //           result.at(i).test_id
+    //         );
+    //         //console.log(result.test_id.substring(1));
+    //         //add Errors to database
+    //         const error = await DAO.addPHPError(
+    //           currentErrorType,
+    //           PHPErrorTypes[currentErrorType]["Severity"],
+    //           result.at(i).filename.substring(12), //rework if make separate folders for extracted py and js files
+    //           zipFileName,
+    //           result.at(i).issue_text,
+    //           result.at(i).issue_confidence,
+    //           result.at(i).issue_severity,
+    //           result.at(i).issue_cwe.link,
+    //           result.at(i).line_number,
+    //           result.at(i).line_range,
+    //           result.at(i).test_name,
+    //           result.at(i).test_id
+    //         );
+
+    //         //case: no errors for file yet recorded, so add it to map
+    //         if (!fileErrorsMap.has(result.at(i).filename)) {
+    //           fileErrors = []; // clear?
+    //           fileErrors.push({ err: error, id: currentErrorType });
+    //           fileErrorsMap.set(result.at(i).filename, fileErrors); //THIS IS USING FILENAME and not unique identifier - duplicate names not allowed?
+    //         } else {
+    //           // file already in map - get filename associated fileErrors array and add error to it
+    //           //fileErrors.push({ err: error, id: currentErrorType });
+    //           //fileErrorsMap.set(result.filename, fileErrors);
+    //           fileErrorsMap
+    //             .get(result.at(i).filename)
+    //             .push({ err: error, id: currentErrorType });
+    //         }
+    //       }
+    //     }
+    //     return fileErrorsMap;
+    //   })
+    // );
+    // console.log("Psalm MADE IT TO HERE!");
+    // console.log(fileErrorsMap.size);
+    // if (fileErrorsMap.size > 0) {
+    //   //connect errors to fileRecord
+    //   for (let [key, value] of fileErrorsMap.entries()) {
+    //     //key = filename ; val = array of mongoose schema errors and numerical pyErrorid for the coresponding file
+
+    //     const severityScores = [];
+    //     const PHPerrors = [];
+    //     await value.forEach((element) => {
+    //       console.log(element.id);
+    //       console.log(element.err);
+    //       severityScores.push(PHPErrorTypes[element.id]["Severity"]);
+
+    //       PHPerrors.push(element.err);
+    //     });
+    //     //
+    //     //console.log();
+    //     //TODO: redo get severity score function
+    //     const fileSeverity = getSeverityScore(severityScores, -1);
+    //     var path1 = require("path");
+    //     const relativePath = path1.basename(key);
+
+    //     //Stores file on the database ?? not actually storing the file just name and length
+    //     const fileRecord = await DAO.addFile(
+    //       relativePath,
+    //       value.length,
+    //       null,
+    //       null, //stuff that is not utilized
+    //       null,
+    //       null,
+    //       null, // no result source for py errors, can add later
+    //       null,
+    //       phpErrors,
+    //       fileSeverity,
+    //       true,
+    //       false,
+    //       zipFileRecord._id
+    //     );
+    //     fileIDArray.push(fileRecord);
+    //   }
+    // }
     //add the list of the students to the zip file on database
     //await DAO.addStudentsToZipFile(
     //  zipFileRecord._id,
@@ -1073,13 +1063,13 @@ app.post("/generateReport", async (req, res) => {
 
     const map = new Map();
     const pyMap = new Map();
-    const phpMap = new Map();
+    //  const phpMap = new Map();
     var numJSErrors = 0;
     var numPYErrors = 0;
-    var numPHPErrors = 0;
+    //  var numPHPErrors = 0;
     var numJSFiles = 0;
     var numPYFiles = 0;
-    var numPHPFiles = 0;
+    //  var numPHPFiles = 0;
     files.forEach((file) => {
       if (file.Errors) {
         numJSFiles++;
@@ -1119,25 +1109,25 @@ app.post("/generateReport", async (req, res) => {
           }
         });
       }
-      if (file.phpErrors) {
-        numPHPFiles++;
-        file.phpErrors.forEach((err) => {
-          numPHPErrors++;
-          if (phpMap.has(err.ErrorType.Name)) {
-            var newObj = phpMap.get(err.ErrorType.Name);
-            newObj.frequency++;
-            phpMap.set(err.ErrorType.Name, newObj);
-          } else {
-            var newObj = {
-              Name: err.ErrorType.Name,
-              Description: '"' + err.ErrorType.Description + '"',
-              Severity: err.ErrorType.Severity,
-              frequency: 1,
-            };
-            phpMap.set(err.ErrorType.Name, newObj);
-          }
-        });
-      }
+      // if (file.phpErrors) {
+      //   numPHPFiles++;
+      //   file.phpErrors.forEach((err) => {
+      //     numPHPErrors++;
+      //     if (phpMap.has(err.ErrorType.Name)) {
+      //       var newObj = phpMap.get(err.ErrorType.Name);
+      //       newObj.frequency++;
+      //       phpMap.set(err.ErrorType.Name, newObj);
+      //     } else {
+      //       var newObj = {
+      //         Name: err.ErrorType.Name,
+      //         Description: '"' + err.ErrorType.Description + '"',
+      //         Severity: err.ErrorType.Severity,
+      //         frequency: 1,
+      //       };
+      //       phpMap.set(err.ErrorType.Name, newObj);
+      //     }
+      //   });
+      // }
     });
     var response = "";
     if (numJSErrors > 0) {
@@ -1189,35 +1179,9 @@ app.post("/generateReport", async (req, res) => {
           "\n";
       });
     }
-<<<<<<< HEAD
-    if (numPHPErrors > 0) {
-      response +=
-        "Most Common Vulnerabilities in PHP Files\n" +
-        "Error Type, Message, Severity, Total Occurrencies, Frequency per file, Percentage of all vulnerabilities\n";
-      var errors = [...phpMap.values()];
-      errors = errors.sort((a, b) =>
-        a.frequency > b.frequency ? -1 : b.frequency > a.frequency ? 1 : 0
-      );
-      errors.forEach((error) => {
-        response +=
-          error.Name +
-          "," +
-          error.Description +
-          "," +
-          error.Severity +
-          "," +
-          error.frequency +
-          "," +
-          error.frequency / numPHPFiles +
-          "," +
-          error.frequency / numPHPErrors +
-          "\n";
-      });
-=======
     if (numPYErrors == 0 && numJSErrors == 0) {
       response +=
         "There are no errors to report within the selected files!  This is most certainly the result of excellent teaching!\n";
->>>>>>> 99c7c4c5b2914360ea378dd759989b9a896fcf9a
     }
     res.json(response);
   } else {
