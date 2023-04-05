@@ -10,7 +10,6 @@ function MetricsPage() {
 
 	useEffect(async () => {
 		const results = (await getZipFileMetadata()).data;
-		console.log(results);
 		setFiles(
 			results.map((result) => {
 				return {
@@ -20,6 +19,8 @@ function MetricsPage() {
 					fileCount: result.FileCount,
 					errorCount: result.ErrorCount,
 					severityScore: result.SeverityScore,
+					FileCountJS: result.FileCountJava,
+					FileCountPY: result.FileCountPython
 				};
 			})
 		);
