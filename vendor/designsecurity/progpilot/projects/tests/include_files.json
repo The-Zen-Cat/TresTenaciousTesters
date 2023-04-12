@@ -1,0 +1,6 @@
+{
+    "inclusions":
+    [
+        "../../../../vulnapps/laravel8/"
+    ]
+}
