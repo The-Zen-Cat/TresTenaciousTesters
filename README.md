@@ -48,9 +48,10 @@ HEROKU is a web app hosting platform that makes it very easy to get changes from
 
 1. Ensure requirements.txt file has 'bandit==1.7.4' (this should be the case already)
 2. app.json file specifies necessary buildpacks which should include nodejs and python (should already be configured correctly)
-3. Create a new app ("dyno") - follow instructions: https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true
-4. You will need to go to your dyno setting and click edit config vars. In here, all .env variables names and values must be supplied (this functions as your .env file for Heroku so you don't have to upload secrets to github)
-5. To integrate with github follow this: https://devcenter.heroku.com/articles/github-integration
+3. Sign up for a heroku account (you will need at least the 5 dollar a month eco dyno account to host the site)
+4. Create a new heorku app (they call app instances "dynos") - follow instructions: https://devcenter.heroku.com/articles/getting-started-with-nodejs?singlepage=true
+5. You will need to go to your dyno setting and click edit config vars. In here, all .env variables names and values must be supplied (this functions as your .env file for Heroku so you don't have to upload secrets to github)
+6. To integrate with github follow this: https://devcenter.heroku.com/articles/github-integration
 
 -----THIS SECTION SHOULD NOT BE NECESSARY IF YOU FOLLOW THE ABOVE STEPS FOR LOCAL DEV INSTALL ----- LEFT FOR INFORMATIONAL PURPOSES ONLY -----
 
