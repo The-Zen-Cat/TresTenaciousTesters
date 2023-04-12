@@ -157,7 +157,7 @@ function BugsPage() {
 	const getTableRowsPHP = () => {
 		return (
 			<div>
-				{Array.from({ length: 39 }).map((_, index) => (
+				{Array.from({ length: 42 }).map((_, index) => (
 					<tr>
 						<Table bordered hover>
 							<td>

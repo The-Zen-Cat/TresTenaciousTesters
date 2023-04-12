@@ -1,0 +1,14 @@
+articles/
+builds/*.phar
+projects/tests/vendor
+projects/tests/composer.lock
+projects/tests/.phpunit.result.cache
+projects/example/vendor
+projects/example/composer.lock
+projects/example_config/vendor
+projects/example_config/composer.lock
+projects/phar/vendor
+projects/phar/composer.lock
+vendor/
+composer.lock
+indent.sh

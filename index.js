@@ -42,6 +42,7 @@ const corsOptions = {
 };
 
 const Bandit = require("./bandit/pythonShell.js");
+const Psalm = require("./psalm/psalmPyShell.js");
 
 app.use(cors(corsOptions));
 app.use(
@@ -298,6 +299,7 @@ app.post("/upload", async (req, res) => {
       else return false;
     };
 
+
     //after inner zip extraction above, will reset all fileNameInZipFolder Array for processing below
     fileNamesInZipFolder = fs.readdirSync("./extracted");
 
@@ -306,6 +308,7 @@ app.post("/upload", async (req, res) => {
 
     var javaResults = new Map();
     var pythonResults = new Map();
+    var phpResults = new Map();
     var totalErrors = 0;
 
     //process each file in zip folder with bandit or eslint (depending on file type)
@@ -337,7 +340,18 @@ app.post("/upload", async (req, res) => {
               true
             )
           );
-        } else {
+        } 
+        // else if (hasPHPFiles(fileNamesInZipFolder.at(i))) {
+        //   console.log("adding php files!");
+        //   phpResults.set(
+        //     fileNamesInZipFolder.at(i),
+        //     await Psalm.runPsalm(
+        //       "./extracted/" + fileNamesInZipFolder.at(i),
+        //       true
+        //     )
+        //   );
+        // } 
+        else {
           if (
             fileNamesInZipFolder
               .at(i)
@@ -367,8 +381,11 @@ app.post("/upload", async (req, res) => {
 
     console.log(pythonResults);
     console.log(javaResults);
+    //console.log(phpResults);
     console.log("javaResults size: ");
     console.log(javaResults.size);
+    //console.log("phpResults size: ");
+    //console.log(phpResults.size);
 
     //add a record of the parsed zip file which includes:
     //name, data, owner (currently logged in user), filecount
@@ -378,9 +395,12 @@ app.post("/upload", async (req, res) => {
       zipFileName,
       new Date(),
       req.session.username,
-      fileCount, // num files tested (java + python)
+
+      fileCount, // num files tested (java + python + php
+
       javaResults.size,
-      pythonResults.size
+      pythonResults.size,
+      //phpResults.size
     );
 
     //add a student record from each file parsed in the zip
@@ -602,7 +622,8 @@ app.post("/upload", async (req, res) => {
         );
         fileIDArray.push(fileRecord);
       })
-    ); //Out of ESLINT Loop
+    );
+
 
     //error count, severity score for metrics page - SEVERITY SCORE CHANGE FROM 0 HERE!
     await DAO.updateZipFile(
@@ -697,10 +718,13 @@ app.post("/generateReport", async (req, res) => {
 
     const map = new Map();
     const pyMap = new Map();
+    //  const phpMap = new Map();
     var numJSErrors = 0;
     var numPYErrors = 0;
+    //  var numPHPErrors = 0;
     var numJSFiles = 0;
     var numPYFiles = 0;
+    //  var numPHPFiles = 0;
     files.forEach((file) => {
       if (file.Errors) {
         numJSFiles++;
@@ -740,6 +764,25 @@ app.post("/generateReport", async (req, res) => {
           }
         });
       }
+      // if (file.phpErrors) {
+      //   numPHPFiles++;
+      //   file.phpErrors.forEach((err) => {
+      //     numPHPErrors++;
+      //     if (phpMap.has(err.ErrorType.Name)) {
+      //       var newObj = phpMap.get(err.ErrorType.Name);
+      //       newObj.frequency++;
+      //       phpMap.set(err.ErrorType.Name, newObj);
+      //     } else {
+      //       var newObj = {
+      //         Name: err.ErrorType.Name,
+      //         Description: '"' + err.ErrorType.Description + '"',
+      //         Severity: err.ErrorType.Severity,
+      //         frequency: 1,
+      //       };
+      //       phpMap.set(err.ErrorType.Name, newObj);
+      //     }
+      //   });
+      // }
     });
     var response = "";
     if (numJSErrors > 0) {

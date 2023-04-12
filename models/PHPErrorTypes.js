@@ -8,140 +8,140 @@ exports.PHPErrorList[-1] = {
 };
 exports.PHPErrorList[0] = {
 	Language: "PHP",
-	Name: "sql",
+	Name: "TaintedSql",
 	Description:
-		"used for strings that could contain SQL",
+		"Emitted when user-controlled input can be passed into to a SQL command.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSql/"
 };
 exports.PHPErrorList[1] = {
 	Language: "PHP",
-	Name: "ldap",
+	Name: "TaintedLdap",
 	Description:
-		"used for strings that could contain a ldap DN or filter",
+		"Potential LDAP injection. This rule is emitted when user-controlled input can be passed into an LDAP request.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedLdap/"
 };
 exports.PHPErrorList[2] = {
 	Language: "PHP",
-	Name: "html",
+	Name: "TaintedHtml",
 	Description:
-		"used for strings that could contain angle brackets or unquoted strings",
+		"Emitted when user-controlled input that can contain HTML can be passed into to an echo statement.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedHtml/"
 };
 exports.PHPErrorList[3] = {
 	Language: "PHP",
-	Name: "has_quotes",
+	Name: "TaintedInclude",
 	Description:
-		"used for strings that could contain unquoted strings",
+		"Emitted when user-controlled input can be passed into to an include or require expression.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedInclude/"
 };
 exports.PHPErrorList[4] = {
 	Language: "PHP",
-	Name: "shell",
+	Name: "TaintedShell",
 	Description:
-		"used for strings that could contain shell commands",
+		"Emitted when user-controlled input can be passed into to an exec call or similar.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedShell/"
 };
 exports.PHPErrorList[5] = {
 	Language: "PHP",
-	Name: "callable",
+	Name: "TaintedCallable",
 	Description:
-		"used for callable strings that could be user-controlled",
+		"Emitted when tainted text is used in an arbitrary function call.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedCallable/"
 };
 exports.PHPErrorList[6] = {
 	Language: "PHP",
-	Name: "unserialize",
+	Name: "TaintedUnserialize",
 	Description:
-		"used for strings that could contain a serialized string",
+		"Tainted input detected to an unserialize call.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedUnserialize/"
 };
 exports.PHPErrorList[7] = {
 	Language: "PHP",
-	Name: "include",
+	Name: "TaintedInput",
 	Description:
-		"used for strings that could contain a path being included",
+		"Emitted when tainted input detection is turned on",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedInput/"
 };
 exports.PHPErrorList[8] = {
 	Language: "PHP",
-	Name: "eval",
+	Name: "TaintedEval",
 	Description:
-		"used for strings that could contain code",
+		"Emitted when user-controlled input can be passed into to an eval call.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedEval/"
 };
 exports.PHPErrorList[9] = {
 	Language: "PHP",
-	Name: "ssrf",
+	Name: "TaintedSSRF",
 	Description:
-		"used for strings that could contain text passed to Curl or similar",
+		"Potential Server-Side Request Forgery vulnerability. This rule is emitted when user-controlled input can be passed into a network request.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSSRF/"
 };
 exports.PHPErrorList[10] = {
 	Language: "PHP",
-	Name: "file",
+	Name: "TaintedFile",
 	Description:
-		"used for strings that could contain a path",
+		"This rule is emitted when user-controlled input can be passed into a sensitive file operation.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedFile/"
 };
 exports.PHPErrorList[11] = {
 	Language: "PHP",
-	Name: "cookie",
+	Name: "TaintedCookie",
 	Description:
-		"used for strings that could contain a http cookie",
+		"Potential cookie injection. This rule is emitted when user-controlled input can be passed into a cookie.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedCookie/"
 };
 exports.PHPErrorList[12] = {
 	Language: "PHP",
-	Name: "header",
+	Name: "TaintedHeader",
 	Description:
-		"used for strings that could contain a http header",
+		"Potential header injection. This rule is emitted when user-controlled input can be passed into a HTTP header.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedHeader/"
 };
 exports.PHPErrorList[13] = {
 	Language: "PHP",
-	Name: "user_secret",
+	Name: "TaintedUserSecret",
 	Description:
-		"used for strings that could contain user-supplied secrets",
+		"Emitted when tainted input detection is turned on and data marked as a user secret is detected somewhere it shouldn’t be.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedUserSecret/"
 };
 exports.PHPErrorList[14] = {
 	Language: "PHP",
-	Name: "system_secret",
+	Name: "TaintedSystemSecret",
 	Description:
-		"used for strings that could contain system secrets",
+		"Emitted when data marked as a system secret is detected somewhere it shouldn’t be.",
 	Severity: 2,
 	CWE: null,
-	MoreInfo: "https://psalm.dev/docs/security_analysis/#taint-types"
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/TaintedSystemSecret/"
 };
-exports.PHPErrorList[15] = {
+exports.PHPErrorList[12] = {
 	Language: "PHP",
 	Name: "argument_injection",
 	Description:
@@ -357,19 +357,46 @@ exports.PHPErrorList[38] = {
 	CWE: "https://cwe.mitre.org/data/definitions/1336.html",
 	MoreInfo: null
 };
+exports.PHPErrorList[39] = {
+	Language: "PHP",
+	Name: "UndefinedFunction",
+	Description:
+		"Emitted when referencing a function that doesn't exist",
+	Severity: 1,
+	CWE: null,
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/UndefinedFunction/"
+};
+exports.PHPErrorList[40] = {
+	Language: "PHP",
+	Name: "MissingFile",
+	Description:
+		"Emitted when using include or require on a file that does not exist",
+	Severity: 1,
+	CWE: null,
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/MissingFile/"
+};
+exports.PHPErrorList[41] = {
+	Language: "PHP",
+	Name: "PossiblyInvalidArgument",
+	Description:
+		"Emitted when a supplied function/method argument is incompatible with the method signature or docblock one.",
+	Severity: 0,
+	CWE: null,
+	MoreInfo: "https://psalm.dev/docs/running_psalm/issues/PossiblyInvalidArgument/"
+};
 
 
-// exports.convertRuleIDToErrorType = (ErrorID) => {
-// 	if (!ErrorID) {
-// 		return -1;
-// 	}
-// 	for (const [key, value] of Object.entries(exports.ErrorList)) {
-// 		if ("" + value["Name"] == ErrorID.replace("-", " ")) {
-// 			return key;
-// 		}
-// 	}
-// 	return -1;
-// };
+exports.convertRuleIDToErrorType = (ErrorID) => {
+	if (!ErrorID) {
+		return -1;
+	}
+	for (const [key, value] of Object.entries(exports.ErrorList)) {
+		if ("" + value["Name"] == ErrorID.replaceAll("-", " ")) {
+			return key;
+		}
+	}
+	return -1;
+};
 
 exports.ReturnPHPErrorTypeInformation = (ErrorID) => {
 	return exports.PHPErrorList[ErrorID];
