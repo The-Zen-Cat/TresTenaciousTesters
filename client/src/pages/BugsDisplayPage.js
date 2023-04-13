@@ -1,19 +1,15 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
 	Grid,
-	Card,
-	Form,
-	Button,
 	Icon,
 	Segment,
 	Header,
 	Table,
 } from "semantic-ui-react";
 
-//TO-DO redesign this
-
-import { getErrorTypes, getErrorTypesNum, getErrorTypesPY, getPYErrorIDs, getErrorTypesPHP, getPHPErrorIDs } from "../client/API.js";
+import { getErrorTypes, getErrorTypesNum, getErrorTypesPY, getErrorTypesPHP, getPHPErrorIDs } from "../client/API.js";
 
 function BugsPage() {
 	const [nameArrayJS, setNameArrayJS] = useState([]);
@@ -79,9 +75,7 @@ function BugsPage() {
                         arrayJS.push({ CWE: results.CWE, MoreInfo: results.MoreInfo });
 		}
 		setArrayJS(arrayJS);
-		// var counterPY = await getErrorTypesNumPY();
 		console.log(counter.data);
-		const pyIndexesTesting = await getPYErrorIDs();
 
 		for (const indexPY of pyIndexes) {
 			const resultsPy = (await getErrorTypesPY(indexPY)).data;
@@ -102,17 +96,6 @@ function BugsPage() {
 		console.log(phpCounter.data);
 	}, []);
 
-	// useEffect(async () => {
-	// 	var counter = await getErrorTypesNumPY();
-	// 	console.log(counter.data);
-	// 	for (let i = 0; i < counter.data; i++) {
-	// 		const results = (await getErrorTypesPY(B102)).data;
-	// 		ArrayAdderPY(results.Name, results.Description, results.CWE, results.MoreInfo, results.Group);
-	// 	}
-	// 	console.log(results);
-	// }, []);
-
-	//TODO: END GAME add Checkboxs to columns that allow the user to turn on and off the displaying of those detections
 	const getTableRowsJavaScript = () => {
 		return (
 			<div>
