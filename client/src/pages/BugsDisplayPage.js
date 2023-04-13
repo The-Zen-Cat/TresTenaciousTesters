@@ -11,7 +11,6 @@ import {
 	Table,
 } from "semantic-ui-react";
 
-//TO-DO redesign this
 
 import { getErrorTypes, getErrorTypesNum, getErrorTypesPY, getPYErrorIDs, getErrorTypesPHP, getPHPErrorIDs } from "../client/API.js";
 
@@ -39,7 +38,7 @@ function BugsPage() {
 
 
 	function ArrayAdderJS(name, severity, description) {
-		// Delete this later
+
 		setNameArrayJS((nameArrayJS) => [...nameArrayJS, name]);
 		setSeverityArrayJS((severityArrayJS) => [...severityArrayJS, severity]);
 		setDescriptionArrayJS((descriptionArrayJS) => [
@@ -49,7 +48,7 @@ function BugsPage() {
 	}
 
 	function ArrayAdderPY(name, severity, description, CWE, moreInfo, group) {
-		// Delete this later
+	
 		setNameArrayPY((nameArrayPY) => [...nameArrayPY, name]);
 		setSeverityArrayPY((severityArray) => [...severityArray, severity]);
 		setDescriptionArrayPY((descriptionArrayPY) => [...descriptionArrayPY, description]);
@@ -59,7 +58,7 @@ function BugsPage() {
 	}
 
 	function ArrayAdderPHP(name, severity, description) {
-		// Delete this later
+
 		setNameArrayPHP((nameArrayPHP) => [...nameArrayPHP, name]);
 		setSeverityArrayPHP((severityArrayPHP) => [...severityArrayPHP, severity]);
 		setDescriptionArrayPHP((descriptionArrayPHP) => [
@@ -79,7 +78,6 @@ function BugsPage() {
                         arrayJS.push({ CWE: results.CWE, MoreInfo: results.MoreInfo });
 		}
 		setArrayJS(arrayJS);
-		// var counterPY = await getErrorTypesNumPY();
 		console.log(counter.data);
 		const pyIndexesTesting = await getPYErrorIDs();
 
@@ -101,16 +99,6 @@ function BugsPage() {
 		setArrayPHP(arrayPHP);
 		console.log(phpCounter.data);
 	}, []);
-
-	// useEffect(async () => {
-	// 	var counter = await getErrorTypesNumPY();
-	// 	console.log(counter.data);
-	// 	for (let i = 0; i < counter.data; i++) {
-	// 		const results = (await getErrorTypesPY(B102)).data;
-	// 		ArrayAdderPY(results.Name, results.Description, results.CWE, results.MoreInfo, results.Group);
-	// 	}
-	// 	console.log(results);
-	// }, []);
 
 	//TODO: END GAME add Checkboxs to columns that allow the user to turn on and off the displaying of those detections
 	const getTableRowsJavaScript = () => {
