@@ -44,7 +44,7 @@
         <xs:attribute name="findUnusedCode" type="xs:boolean" default="false" />
         <xs:attribute name="findUnusedVariablesAndParams" type="xs:boolean" default="false" />
         <xs:attribute name="findUnusedPsalmSuppress" type="xs:boolean" default="false" />
-        <!-- TODO: Update default to true in Psalm 6 -->
+
         <xs:attribute name="findUnusedBaselineEntry" type="xs:boolean" default="false" />
         <xs:attribute name="hideExternalErrors" type="xs:boolean" default="false" />
         <xs:attribute name="hoistConstants" type="xs:boolean" default="false" />

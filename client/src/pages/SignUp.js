@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Form, Grid, Input, Button, Message, GridRow } from "semantic-ui-react";
+import { Form, Grid, Input, Button, Message } from "semantic-ui-react";
 import { signup } from "../client/API.js";
 import { useCookies } from "react-cookie";
-import { List } from "semantic-ui-react";
 
 function SignUp(props) {
 	const [username, setUsername] = useState("");
@@ -25,7 +24,7 @@ function SignUp(props) {
 			setWrong(prevState => ([...prevState, <li>Invalid password. Must contain at least one letter and one number and be 6-16 characters in length. May contain alphanumeric characters and the following symbols: !, @, #, $, %, ^, &, and *.</li>]));
 			correct = false;
 		}
-		if (password != rePassword) {
+		if (password !== rePassword) {
 			setWrong(prevState => ([...prevState, <li>Passwords don't match.</li>]));
 			correct = false;
 		}

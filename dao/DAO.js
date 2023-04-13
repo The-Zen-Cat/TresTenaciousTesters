@@ -8,7 +8,6 @@ const File = require("../models/File.js").Model;
 const Error = require("../models/JSError.js").Model;
 const PYError = require("../models/PYError.js").Model;
 const ErrorList = require("../models/ErrorTypes.js").ErrorList;
-// const PYErrorList = require("../models/PYErrorTypes.js").PYErrorList;
 
 exports.getUser = async (username) => {
   return User.findOne({
@@ -22,25 +21,11 @@ exports.getStudent = async (id) => {
   return Student.find();
 };
 
-//exports.findFacebookUser = async (id) => {
-//	return User.findOne({facebookId: id});
-//};
-
-//exports.findGoogleUser = async (id) => {
-//	return User.findOne({googleId: id});
-//};
 
 exports.getUserById = async (id) => {
   return User.findById(id);
 };
 
-//exports.addFacebookUser = async (id, name) => {
-//	return await User.create({ Username: name, facebookId: id, Admin: false });
-//};
-
-//exports.addGoogleUser = async (id, name) => {
-//	return await User.create({ Username: name, googleId: id, Admin: false });
-//};
 
 /*
  The .lean option tells Mongoose to skip instantiating a full document in response to the find call, and instead
@@ -183,7 +168,6 @@ exports.addFile = async (
 };
 
 exports.addFileToStudent = async (StudentId, FileID) => {
-  // (await ZipFile.findById(StudentId)).Files.push(FileID).save();
 
   return await Student.updateOne(
     { _id: StudentId },

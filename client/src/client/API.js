@@ -43,20 +43,6 @@ const signup = async (username, password) => {
   });
 };
 
-/*const facebookLogin = async (id, username) => {
-  return await axios.post(url + "facebookLogin", {
-    username: username,
-    facebookId: id,
-  });
-};
-
-const googleLogin = async (id, username) => {
-  return await axios.post(url + "googleLogin", {
-    username: username,
-    googleId: id,
-  });
-}; */ //TODO: REMOVE
-
 const logout = async () => {
   return await axios.post(url + "logout");
 };
@@ -101,10 +87,6 @@ const getZipFile = async (id) => {
   return await axios.get(url + "studentfiles?id=" + id);
 };
 
-//const deleteDatabase = async () => {
-//  return await axios.delete(url + "deleteAll");
-//};  TODO DELETE THIS OR KEEP?? UNUSED CURRENTLY
-
 const deleteZipFolder = async (id) => {
   console.log(`API JS Says ` + id);
   return await axios.delete(url + "deleteZipFolder?id=" + id);
@@ -126,7 +108,5 @@ export {
   getPHPErrorIDs,
   deleteZipFolder,
   generateReport,
-  getUser,
-  //facebookLogin,
-  //googleLogin,
+  getUser
 };
