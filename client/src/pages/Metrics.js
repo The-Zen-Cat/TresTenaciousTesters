@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-//import axios from "axios";
 import { Grid, Icon, Segment, Header } from "semantic-ui-react";
 import { ZipChartsPage } from "../components/ChartsPage";
 import { getZipFileMetadata } from "../client/API.js";
