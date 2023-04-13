@@ -13,7 +13,6 @@ import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
 import Landing from "./pages/Landing";
 import DownloadReportPage from "./pages/DownloadReportPage";
-//import FederatedOAuth from "./components/FederatedOAuth";
 import { getUser, getZipFile } from "./client/API";
 
 function App() {

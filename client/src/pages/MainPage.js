@@ -169,7 +169,6 @@ function MainPage(props) {
     setConfirmDeleteOpen(false);
     console.log("id number for deletezipfile: " + id);
     deleteZipFolder(id);
-    //setFiles(files.filter((file) => file.id !== id));
     updatenum++;
     console.log("update num: " + updatenum);
     setUpdate(updatenum);

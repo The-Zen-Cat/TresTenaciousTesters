@@ -35,7 +35,7 @@ function BugsPage() {
 
 
 	function ArrayAdderJS(name, severity, description) {
-		// Delete this later
+
 		setNameArrayJS((nameArrayJS) => [...nameArrayJS, name]);
 		setSeverityArrayJS((severityArrayJS) => [...severityArrayJS, severity]);
 		setDescriptionArrayJS((descriptionArrayJS) => [
@@ -45,7 +45,7 @@ function BugsPage() {
 	}
 
 	function ArrayAdderPY(name, severity, description, CWE, moreInfo, group) {
-		// Delete this later
+	
 		setNameArrayPY((nameArrayPY) => [...nameArrayPY, name]);
 		setSeverityArrayPY((severityArray) => [...severityArray, severity]);
 		setDescriptionArrayPY((descriptionArrayPY) => [...descriptionArrayPY, description]);
@@ -55,7 +55,7 @@ function BugsPage() {
 	}
 
 	function ArrayAdderPHP(name, severity, description) {
-		// Delete this later
+
 		setNameArrayPHP((nameArrayPHP) => [...nameArrayPHP, name]);
 		setSeverityArrayPHP((severityArrayPHP) => [...severityArrayPHP, severity]);
 		setDescriptionArrayPHP((descriptionArrayPHP) => [
