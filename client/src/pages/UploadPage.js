@@ -13,7 +13,6 @@ import { upload } from "../client/API.js";
 import Spinner from "../components/Spinner.js";
 
 function UploadPage() {
-  //let [loading, setLoading] = useState(false);
   const [file, setFile] = useState();
   const [fileName, setFileName] = useState("");
   const [status, setStatus] = useState("");
