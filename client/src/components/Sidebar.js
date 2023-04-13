@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, Menu, Input, Divider } from "semantic-ui-react";
+import { Icon, Menu } from "semantic-ui-react";
 
 function Sidebar(props) {
 	const { updateRouteHandler, updateZipFileHandler } = props;
